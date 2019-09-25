@@ -42,6 +42,9 @@ public class SteeringBehavior : MonoBehaviour {
     public GameObject[] Path;
     public int current = 0;
 
+    // (jessie) for collision avoidance, need list of potential targets 
+    public GameObject[] targets;
+
     protected void Start() {
         agent = GetComponent<NPCController>();
         wanderOrientation = agent.orientation;
@@ -66,6 +69,12 @@ public class SteeringBehavior : MonoBehaviour {
     {
         return 0f;
     }
+
+    public void CollisionAvoidance() {
+
+    // 1. Find the target that’s closest to collision
+    }
+
 
 
     // ETC.
