@@ -50,7 +50,11 @@ public class MapStateManager : MonoBehaviour {
 
     LineRenderer line;                 
     public GameObject[] Path;
-    public Text narrator;                   // 
+    public Text narrator;
+
+    [Header("our variables for MapStateManager")]
+    GameObject wolfNPC;
+    GameObject
 
     // Use this for initialization. Create any initial NPCs here and store them in the 
     // spawnedNPCs list. You can always add/remove NPCs later on.
@@ -64,10 +68,10 @@ public class MapStateManager : MonoBehaviour {
         SpawnTrees(TreeCount);
 
         spawnedNPCs = new List<GameObject>();
-        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 4));
+        //spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 4));
         
-        Invoke("SpawnWolf", 12);
-        Invoke("Meeting1", 30);
+        //Invoke("SpawnWolf", 12);
+        //Invoke("Meeting1", 30);
     }
 
     /// <summary>
@@ -102,13 +106,15 @@ public class MapStateManager : MonoBehaviour {
                     }
                 }
             }
+        } else {
+            previousPhase = currentPhase;
         }
         // Check if a game event had caused a change of phase.
         if (currentPhase == previousPhase)
             return;
 
 
-        /************* FRAMEWORK VERSION
+        // FRAMEWORK VERSION
        // If we get here, we've been given a new phase, from either source
        switch (currentPhase) {
            case 0:
@@ -126,7 +132,7 @@ public class MapStateManager : MonoBehaviour {
            case 3:
                break;
        }
-       **************/
+     
 
         switch (currentPhase)
             {
@@ -217,7 +223,7 @@ public class MapStateManager : MonoBehaviour {
 
     private void EnterMapStateOne() {
         narrator.text = "In Phase One, we're going to ...";
-
+        Debug.Log("we got into state one");
         //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
