@@ -40,11 +40,17 @@ public class NPCController : MonoBehaviour {
     /// </summary>
     void FixedUpdate() {
         switch (phase) {
-            case 1:
+            case 0: /* note = > NOT MAPPED : DEFAULT WHILE WAITING FOR INPUT */
+                if(label) {
+                    label.text = name.Replace("(Clone)", "") + "\nWaiting for input";
+                }
+                break;
+
+            case 1: /*note =>  PURSUE AND FACE */
                 if (label) {
                     // replace "First algorithm" with the name of the actual algorithm you're demoing
                     // do this for each phase
-                    label.text = name.Replace("(Clone)","") + "\nAlgorithm: First algorithm"; 
+                    label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue and Face algorithm(s)"; 
                 }
                 linear = ai.Pursue();   // For example
                 angular = ai.Face();    // For example
@@ -52,9 +58,9 @@ public class NPCController : MonoBehaviour {
                 // linear = ai.whatever();  -- replace with the desired calls
                 // angular = ai.whatever();
                 break;
-            case 2:
+            case 2: /* note = > EVADE (testing wall avoidance too) */
                 if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Second algorithm";
+                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
 
                 // linear = ai.whatever();  -- replace with the desired calls

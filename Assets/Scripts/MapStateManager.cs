@@ -54,7 +54,7 @@ public class MapStateManager : MonoBehaviour {
 
     [Header("our variables for MapStateManager")]
     GameObject wolfNPC;
-    GameObject
+    //GameObject
 
     // Use this for initialization. Create any initial NPCs here and store them in the 
     // spawnedNPCs list. You can always add/remove NPCs later on.
@@ -68,8 +68,10 @@ public class MapStateManager : MonoBehaviour {
         SpawnTrees(TreeCount);
 
         spawnedNPCs = new List<GameObject>();
-        //spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 4));
-        
+        // add to list, with call to SpawnItem (returns game object) --> args ( game object location, the prefab, the target, the text, 
+        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
+        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
+
         //Invoke("SpawnWolf", 12);
         //Invoke("Meeting1", 30);
     }
@@ -133,7 +135,7 @@ public class MapStateManager : MonoBehaviour {
                break;
        }
      
-
+        /*
         switch (currentPhase)
             {
                 case 0:
@@ -209,12 +211,15 @@ public class MapStateManager : MonoBehaviour {
                     }
                     break;
             }
+        */
     }
 
 
     private void EnterMapStateZero()
     {
         narrator.text = "In Phase Zero, we're going to ...";
+        //narrator.text = "The Hunter spots the wolf and believes it is his target. The Wolf runs.";
+        
 
         //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
 
@@ -224,6 +229,10 @@ public class MapStateManager : MonoBehaviour {
     private void EnterMapStateOne() {
         narrator.text = "In Phase One, we're going to ...";
         Debug.Log("we got into state one");
+        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+        spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
+        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 2;
         //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));

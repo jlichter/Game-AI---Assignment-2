@@ -44,7 +44,7 @@ public class SteeringBehavior : MonoBehaviour {
 
     [Header("Our Variables")]
     public float pred;
-
+    [Header("Ray 'sensors'")]
     public float raysLength = 5f;
     public float frontRayPosition = 0.5f;
 
@@ -80,7 +80,7 @@ public class SteeringBehavior : MonoBehaviour {
 
     // ETC.
 
-
+//todo: "sensors" for raycasts 
     /*
  * getSteering() calculates a surrogate target
  * and returns the target's position
@@ -163,13 +163,14 @@ public class SteeringBehavior : MonoBehaviour {
     private void Rays() {
 
         RaycastHit hit;
-        Vector3 rayStartPos = agent.position;
+        Vector3 rayStartPos = agent.transform.position;
         rayStartPos.z += frontRayPosition;
 
         if(Physics.Raycast(rayStartPos, agent.transform.forward, out hit, raysLength)) {
-
+            Debug.DrawLine(rayStartPos, hit.point);
         }
-        Debug.DrawLine(rayStartPos, hit.point);
+
+        
     }
 
 }
