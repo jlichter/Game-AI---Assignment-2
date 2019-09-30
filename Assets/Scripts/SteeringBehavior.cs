@@ -45,7 +45,7 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("Our Variables")]
     public float pred;
     [Header("Ray 'sensors'")]
-    public float raysLength = 5f;
+    public float raysLength = 15f;
     public float frontRayPosition = 0.5f;
 
     // (jessie) for collision avoidance, need list of potential targets 
@@ -80,7 +80,11 @@ public class SteeringBehavior : MonoBehaviour {
 
     // ETC.
 
-//todo: "sensors" for raycasts 
+/* todo: "sensors" for raycasts, finish putting the other ones in 
+ and make the agent avoid the obstacles. then, make the chasing agent
+ avoid them too . once u get that to work, see about making algos 
+ "more intelligent* / 
+
     /*
  * getSteering() calculates a surrogate target
  * and returns the target's position
@@ -156,18 +160,21 @@ public class SteeringBehavior : MonoBehaviour {
     public void WallAvoidance() {
 
         // note: USE RAYCASTS
-
+       // Debug.Log("we got here, wall avoidance");
         // 1. Find the target that’s closest to collision
+        Rays();
     }
 
     private void Rays() {
 
+        //Debug.Log("got into the rays too");
         RaycastHit hit;
-        Vector3 rayStartPos = agent.transform.position;
+        Vector3 rayStartPos = agent.position;
         rayStartPos.z += frontRayPosition;
 
-        if(Physics.Raycast(rayStartPos, agent.transform.forward, out hit, raysLength)) {
-            Debug.DrawLine(rayStartPos, hit.point);
+        if(Physics.SphereCast(rayStartPos, 0.1f,agent.velocity, out hit, raysLength)) {
+           // Debug.Log("we got to the out hit statement");
+            //Gizmos.DrawSphere(hit.point, 0.4f);
         }
 
         

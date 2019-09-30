@@ -26,6 +26,8 @@ public class NPCController : MonoBehaviour {
     public Text label;              // Used to displaying text nearby the agent as it moves around
     LineRenderer line;              // Used to draw circles and other things
 
+
+
     private void Start() {
         ai = GetComponent<SteeringBehavior>();
         rb = GetComponent<Rigidbody>();
@@ -63,6 +65,8 @@ public class NPCController : MonoBehaviour {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
 
+                linear = ai.Evade();
+                ai.WallAvoidance();
                 // linear = ai.whatever();  -- replace with the desired calls
                 // angular = ai.whatever();
                 break;
@@ -163,5 +167,14 @@ public class NPCController : MonoBehaviour {
         if (line) {
             line.positionCount = 0;
         }
+    }
+    /*
+     *jessie 
+     * note => getLinear() is used for the raycasts in sensing collisions 
+     *          args : none
+     *          returns : direction ai is moving 
+    */
+    public Vector3 getLinear() {
+        return linear;
     }
 }
