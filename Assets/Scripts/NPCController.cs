@@ -57,34 +57,26 @@ public class NPCController : MonoBehaviour {
                 linear = ai.Pursue();   // For example
                 angular = ai.Face();    // For example
 
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
                 break;
-            case 2: /* note = > EVADE (testing wall avoidance too) */
+            case 2: /* note => EVADE (testing wall avoidance too) */
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
-
                 linear = ai.Evade();
                 ai.WallAvoidance();
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
+
                 break;
-            case 3:
+            case 3: /* note => ARRIVE */
                 if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Third algorithm";
+                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Arrive algorithm";
                 }
 
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
                 break;
-            case 4:
+            case 4: /* note => WANDER */
                 if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Fourth algorithm";
+                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Wander algorithm";
                 }
 
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
                 break;
             case 5:
                 if (label) {
@@ -168,13 +160,5 @@ public class NPCController : MonoBehaviour {
             line.positionCount = 0;
         }
     }
-    /*
-     *jessie 
-     * note => getLinear() is used for the raycasts in sensing collisions 
-     *          args : none
-     *          returns : direction ai is moving 
-    */
-    public Vector3 getLinear() {
-        return linear;
-    }
+
 }
