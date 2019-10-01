@@ -84,7 +84,15 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Wander algorithm";
                 }
-                linear = ai.Wander(out angular);
+                Vector3 wallAvoid = ai.WallAvoidance();
+                if (wallAvoid.magnitude > 0) {
+                    linear = wallAvoid * 2;
+                }
+                else {
+                    linear = ai.Wander();
+                }
+                angular = 2*ai.LookWhereYoureGoing();
+                
                 DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
                 break;
             case 5:

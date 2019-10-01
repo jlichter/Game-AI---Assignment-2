@@ -277,7 +277,7 @@ public class SteeringBehavior : MonoBehaviour {
      * Wander() controls a character moving aimlessly about
      * (from assignment 1)
      */
-    public Vector3 Wander(out float angular) {
+    public Vector3 Wander() {
 
         // Update the wander orientation
         wanderOrientation += (Random.value - Random.value) * wanderRate;
@@ -294,7 +294,6 @@ public class SteeringBehavior : MonoBehaviour {
             target = new NPCController();
         }
         target.orientation = Mathf.Atan2(steering.x, steering.z);
-        angular = Align();
         // Now return the linear acceleration to be at full
         // acceleration in the direction of the orientation
         return steering.normalized * maxAcceleration;
@@ -356,7 +355,58 @@ public class SteeringBehavior : MonoBehaviour {
     // todo collision detection
     // todo chase the player
     // todo more intellgient wander
-    // todo more intelligent behavior overall 
+    // todo more intelligent behavior overall
+
+    public float LookWhereYoureGoing() {
+        // Create the structure to hold our output
+        float steering_angular;
+        float direction = Mathf.Atan2(agent.velocity.x, agent.velocity.z);
+        // Get the naive direction to the target
+        float rotation = direction - agent.orientation;
+        
+        // map the result to the (-pi,pi) interval 
+        while (rotation > Mathf.PI) {
+            rotation -= 2 * Mathf.PI;
+        }
+        while (rotation < -Mathf.PI) {
+            rotation += 2 * Mathf.PI;
+        }
+        float rotationSize = Mathf.Abs(rotation);
+
+        // Check if we are there, return no steering
+        if (rotationSize < targetRadiusA) {
+            agent.rotation = 0;
+        }
+
+        // Otherwise calculate a scaled rotation 
+        float targetRotation;
+        if (rotationSize > slowRadiusA) {
+            targetRotation = maxRotation;
+        }
+        else {
+            targetRotation = (maxRotation * rotationSize) / slowRadiusA;
+        }
+
+        // The final target rotation combines
+        // speed (already in the variable) and direction
+        targetRotation *= (rotation / rotationSize);
+
+        // Acceleration tries to get to the target rotation
+        steering_angular = targetRotation - agent.rotation;
+        steering_angular = steering_angular / timeToTarget;
+
+        // Check if the acceleration is too great
+        float angularAcceleration;
+        angularAcceleration = Mathf.Abs(steering_angular);
+        if (angularAcceleration > maxAngularAcceleration) {
+            steering_angular = steering_angular / angularAcceleration;
+            steering_angular = steering_angular / angularAcceleration;
+            steering_angular *= maxAngularAcceleration;
+        }
+        // 
+        // output the steering 
+        return steering_angular;
+    }
 
     
     private void Rays() {
