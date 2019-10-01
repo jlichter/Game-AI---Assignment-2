@@ -49,7 +49,7 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
-    public float raysLength = 15f;
+    public float raysLength = 15f; // holds the distance to look ahead for a collision 
     public float frontRayPosition = 0.5f;
 
     // (jessie) for collision avoidance, need list of potential targets 
@@ -255,37 +255,56 @@ public class SteeringBehavior : MonoBehaviour {
         return steering.normalized * maxAcceleration;
     }
 
-    public bool collisionDetection(Vector3 rayStart, RaycastHit hitPoint, out Vector3 collisionPos, out Vector3 collisionNorm) {
+    public bool CollisionDetection(Vector3 rayStart, RaycastHit hitPoint, out Vector3 collisionPos, out Vector3 collisionNorm) {
 
         collisionPos = new Vector3(0f, 0f, 0f); 
         collisionNorm = new Vector3(0f, 0f, 0f); 
-
+        // see if sphere cast detects collision ahead of player travel
+        // if so, set the collision position and the collision normal 
         if (Physics.SphereCast(rayStart, 0.1f, agent.velocity, out hitPoint, raysLength)) {
 
-            collisionPos= hitPoint.transform.position;
+            collisionPos = hitPoint.transform.position;
             collisionNorm = hitPoint.normal;
-            return true;
+            return true; // if collision detected, return true 
         }
 
-        return false;
+        return false; // else, no collision, return false 
 
     }
 
-    public void WallAvoidance() {
+    public Vector3 WallAvoidance() {
 
-        RaycastHit hit;
-
+        // holds the information about 
+        RaycastHit hit = new RaycastHit();
+        // holds the minimum distance to a wall 
+        float avoidDistance = 5f;
         // calculate the collision ray vector 
         Vector3 rayStartPos = agent.position;
         rayStartPos.z += frontRayPosition;
         Vector3 rayVector = agent.velocity;
         rayVector.Normalize();
-        Vector3 collision;
-        if (Physics.SphereCast(rayStartPos, 0.1f, agent.velocity, out hit, raysLength)) {
+        Vector3 cpTemp = new Vector3(0f, 0f, 0f);
+        Vector3 cnTemp = new Vector3(0f, 0f, 0f);
 
-            collision = hit.normal;
+        // find the collision
+        if (CollisionDetection(rayStartPos, hit, out cpTemp, out cnTemp)) {
+
+            Vector3 collisionPosition = cpTemp;
+            Vector3 collisionNormal = cnTemp;
+            Vector3 newPosition = collisionPosition + collisionNormal * avoidDistance;
+            // Get the direction to the target
+            Vector3 direction = newPosition - agent.position;
+            // The velocity is along this direction, at full speed
+            direction.Normalize();
+            direction *= maxAcceleration;
+            return direction;
+
+        } else {
+            //if no collision, do nothing 
+            return new Vector3(0f,0f,0f);
 
         }
+
     }
     // todo collision prediction
     // todo collision detection
