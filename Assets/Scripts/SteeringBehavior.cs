@@ -49,7 +49,7 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
-    public float raysLength = 15f; // holds the distance to look ahead for a collision 
+    public float raysLength = 20f; // holds the distance to look ahead for a collision 
     public float frontRayPosition = 0.5f;
 
     // (jessie) for collision avoidance, need list of potential targets 
@@ -303,10 +303,12 @@ public class SteeringBehavior : MonoBehaviour {
     public bool CollisionDetection(Vector3 rayStart, RaycastHit hitPoint, out Vector3 collisionPos, out Vector3 collisionNorm) {
 
         collisionPos = new Vector3(0f, 0f, 0f); 
-        collisionNorm = new Vector3(0f, 0f, 0f); 
+        collisionNorm = new Vector3(0f, 0f, 0f);
+        Vector3 agentVelocity = agent.velocity;
+        agentVelocity.Normalize();
         // see if sphere cast detects collision ahead of player travel
         // if so, set the collision position and the collision normal 
-        if (Physics.SphereCast(rayStart, 0.1f, agent.velocity, out hitPoint, raysLength)) {
+        if (Physics.SphereCast(rayStart, 0.1f, agentVelocity, out hitPoint, raysLength)) {
             Debug.Log("here!");
             collisionPos = hitPoint.point;
             collisionNorm = hitPoint.normal;
@@ -323,12 +325,10 @@ public class SteeringBehavior : MonoBehaviour {
         // holds the information about 
         RaycastHit hit = new RaycastHit();
         // holds the minimum distance to a wall 
-        float avoidDistance = 10f;
+        float avoidDistance = 5f;
         // calculate the collision ray vector 
         Vector3 rayStartPos = agent.position;
         rayStartPos.z += frontRayPosition;
-        Vector3 rayVector = agent.velocity;
-        rayVector.Normalize();
         Vector3 cpTemp = new Vector3(0f, 0f, 0f);
         Vector3 cnTemp = new Vector3(0f, 0f, 0f);
 
