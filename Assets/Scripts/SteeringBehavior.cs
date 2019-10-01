@@ -165,6 +165,51 @@ public class SteeringBehavior : MonoBehaviour {
         return steering;
 
     }
+ /* 
+  * Arrive() causes the agent to move towards the target, like pursue.
+  *     but unlike pursue, Arrive() causes the agent to slow down as it arrives
+ *      exactly at the right location.
+ */
+    public Vector3 Arrive() {
+
+        // Create the structure to hold our output
+        Vector3 steering;
+
+        // get the direction to the target 
+        Vector3 direction = target.position - agent.position;
+        float distance = direction.magnitude;
+        float targetSpeed;
+        // Check if we are there, return no steering
+
+        //  If we are outside the slowRadius, then go max speed
+        if (distance < targetRadiusL) {
+            //return Vector3.zero;
+            targetSpeed = 0;
+        } else if (distance > slowRadiusL) {
+            targetSpeed = maxSpeed;
+        } // Otherwise calculate a scaled speed
+          else {
+            targetSpeed = (maxSpeed * distance) / slowRadiusL;
+        }
+
+        // The target velocity combines speed and direction
+        Vector3 targetVelocity = direction;
+        targetVelocity.Normalize();
+        targetVelocity *= targetSpeed;
+
+        // Acceleration tries to get to the target velocity
+        steering = targetVelocity - agent.velocity;
+        steering = steering / timeToTarget;
+
+        // Check if the acceleration is too fast
+        if (steering.magnitude > maxAcceleration) {
+            steering.Normalize();
+            steering *= maxAcceleration;
+        }
+
+        // output the steering 
+        return steering;
+    }
 
     /* 
      * Align() tries to match the orientation of the character with that of the target. 

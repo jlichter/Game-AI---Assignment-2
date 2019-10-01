@@ -62,21 +62,24 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
+
                 linear = ai.Evade();
-                ai.WallAvoidance();
+                
 
                 break;
             case 3: /* note => ARRIVE */
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Arrive algorithm";
                 }
+                linear = ai.Arrive();
 
                 break;
             case 4: /* note => WANDER */
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Wander algorithm";
                 }
-
+                linear = ai.Wander(out angular);
+                DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
                 break;
             case 5:
                 if (label) {
