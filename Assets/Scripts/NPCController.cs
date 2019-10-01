@@ -64,6 +64,12 @@ public class NPCController : MonoBehaviour {
                 }
 
                 linear = ai.Evade();
+                Vector3 temp = new Vector3(0f, 0f, 0f);
+                if(ai.WallAvoidance() != temp) {
+                    linear = ai.WallAvoidance();
+                } else {
+                    linear = ai.Evade();
+                }
                 
 
                 break;

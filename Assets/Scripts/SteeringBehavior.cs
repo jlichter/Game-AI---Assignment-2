@@ -307,9 +307,10 @@ public class SteeringBehavior : MonoBehaviour {
         // see if sphere cast detects collision ahead of player travel
         // if so, set the collision position and the collision normal 
         if (Physics.SphereCast(rayStart, 0.1f, agent.velocity, out hitPoint, raysLength)) {
-
-            collisionPos = hitPoint.transform.position;
+            Debug.Log("here!");
+            collisionPos = hitPoint.point;
             collisionNorm = hitPoint.normal;
+            Debug.DrawLine(rayStart, hitPoint.point);
             return true; // if collision detected, return true 
         }
 
@@ -322,7 +323,7 @@ public class SteeringBehavior : MonoBehaviour {
         // holds the information about 
         RaycastHit hit = new RaycastHit();
         // holds the minimum distance to a wall 
-        float avoidDistance = 5f;
+        float avoidDistance = 10f;
         // calculate the collision ray vector 
         Vector3 rayStartPos = agent.position;
         rayStartPos.z += frontRayPosition;
@@ -336,7 +337,7 @@ public class SteeringBehavior : MonoBehaviour {
 
             Vector3 collisionPosition = cpTemp;
             Vector3 collisionNormal = cnTemp;
-            Vector3 newPosition = collisionPosition + collisionNormal * avoidDistance;
+            Vector3 newPosition = -collisionPosition + collisionNormal * avoidDistance;
             // Get the direction to the target
             Vector3 direction = newPosition - agent.position;
             // The velocity is along this direction, at full speed
