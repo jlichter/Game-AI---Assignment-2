@@ -26,6 +26,8 @@ public class NPCController : MonoBehaviour {
     public Text label;              // Used to displaying text nearby the agent as it moves around
     LineRenderer line;              // Used to draw circles and other things
 
+
+
     private void Start() {
         ai = GetComponent<SteeringBehavior>();
         rb = GetComponent<Rigidbody>();
@@ -40,41 +42,41 @@ public class NPCController : MonoBehaviour {
     /// </summary>
     void FixedUpdate() {
         switch (phase) {
-            case 1:
+            case 0: /* note = > NOT MAPPED : DEFAULT WHILE WAITING FOR INPUT */
+                if(label) {
+                    label.text = name.Replace("(Clone)", "") + "\nWaiting for input";
+                }
+                break;
+
+            case 1: /*note =>  PURSUE AND FACE */
                 if (label) {
                     // replace "First algorithm" with the name of the actual algorithm you're demoing
                     // do this for each phase
-                    label.text = name.Replace("(Clone)","") + "\nAlgorithm: First algorithm"; 
+                    label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue and Face algorithm(s)"; 
                 }
                 linear = ai.Pursue();   // For example
                 angular = ai.Face();    // For example
 
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
                 break;
-            case 2:
+            case 2: /* note => EVADE (testing wall avoidance too) */
                 if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Second algorithm";
+                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
+                }
+                linear = ai.Evade();
+                ai.WallAvoidance();
+
+                break;
+            case 3: /* note => ARRIVE */
+                if (label) {
+                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Arrive algorithm";
                 }
 
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
                 break;
-            case 3:
+            case 4: /* note => WANDER */
                 if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Third algorithm";
+                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Wander algorithm";
                 }
 
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
-                break;
-            case 4:
-                if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Fourth algorithm";
-                }
-
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
                 break;
             case 5:
                 if (label) {
@@ -158,4 +160,5 @@ public class NPCController : MonoBehaviour {
             line.positionCount = 0;
         }
     }
+
 }
