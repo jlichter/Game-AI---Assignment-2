@@ -38,6 +38,8 @@ public class SteeringBehavior : MonoBehaviour {
     public float wanderRate;
     private float wanderOrientation;
 
+    LineRenderer line;
+
    
 
     // Holds the path to follow
@@ -49,7 +51,7 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
-    public float raysLength = 3f; // holds the distance to look ahead for a collision 
+    public float raysLength = 5f; // holds the distance to look ahead for a collision 
     public float frontRayPosition = 0.1f;
     [Header("Collision Detection")]
     public Vector3 collisionPosition;
@@ -61,6 +63,7 @@ public class SteeringBehavior : MonoBehaviour {
     protected void Start() {
         agent = GetComponent<NPCController>();
         wanderOrientation = agent.orientation;
+        line = GetComponent<LineRenderer>();
     }
 
     public Vector3 Seek() {
@@ -434,9 +437,10 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 agentVelocity = agent.velocity;
         agentVelocity.Normalize();
         Vector3 rayStartPos = agent.position; // - agent.velocity.normalized * 0.01f;
+        rayStartPos.z += frontRayPosition;
 
         if ( Physics.SphereCast(rayStartPos, 0.1f, agentVelocity, out hit, raysLength) ) {
-                collisionPosition = hit.transform.position;
+                collisionPosition = hit.point;
                 collisionNormal = hit.normal;
                 return true;
         } else {
@@ -447,9 +451,13 @@ public class SteeringBehavior : MonoBehaviour {
     
     public Vector3 WallAvoidance() {
 
-        float avoidDistance = 2f;
+        float avoidDistance = 10f;
         if (CollisionDetection()) {
-            Vector3 newTargetPos = collisionPosition + collisionNormal * avoidDistance;
+            Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
+            Vector3[] linePoints = {agent.position, collisionPosition, collisionNormal * avoidDistance};
+            line.positionCount = 3;
+            line.useWorldSpace = true;
+            line.SetPositions(linePoints);
             Vector3 direction = newTargetPos - agent.position;
             direction.Normalize();
             direction *= maxAcceleration;
