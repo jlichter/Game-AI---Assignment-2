@@ -55,7 +55,9 @@ public class NPCController : MonoBehaviour {
                     // do this for each phase
                     label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue and Face algorithm(s)"; 
                 }
-  
+
+                linear = ai.Pursue();
+                angular = ai.Face();
                 if (ai.WallAvoidance() != new Vector3(0f, 0f, 0f)) {
                     linear = ai.WallAvoidance();
                 } else {
@@ -69,7 +71,7 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
- 
+                linear = ai.Evade();
                 if(ai.WallAvoidance() != new Vector3(0f, 0f, 0f)) {
                     linear = ai.WallAvoidance();
                 } else {
@@ -96,9 +98,9 @@ public class NPCController : MonoBehaviour {
                 
                 DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
                 break;
-            case 5:
-                if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Fifth algorithm";
+            case 5: // note ==> PURSUING PLAYER 
+                 if (label) {
+                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: pursue algorithm";
                 }
 
                 // linear = ai.whatever();  -- replace with the desired calls

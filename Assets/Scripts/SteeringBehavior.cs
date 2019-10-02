@@ -48,14 +48,12 @@ public class SteeringBehavior : MonoBehaviour {
 
     [Header("Our Variables")]
     public float pred;
+    public bool chasePlayer;
+    public PlayerController playerTarget;
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
-<<<<<<< HEAD
-    public float raysLength = 5f; // holds the distance to look ahead for a collision 
-    public float frontRayPosition = 0.1f;
-=======
-    public float raysLength = 3f; // holds the distance to look ahead for a collision 
+    public float raysLength = 7f; // holds the distance to look ahead for a collision 
     public float frontRayPosition;
 >>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
     [Header("Collision Detection")]
@@ -72,7 +70,7 @@ public class SteeringBehavior : MonoBehaviour {
         line = GetComponent<LineRenderer>();
 =======
         frontRayPosition = agent.position.z;
->>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
+        playerTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     }
 
     public Vector3 Seek() {
@@ -117,8 +115,19 @@ public class SteeringBehavior : MonoBehaviour {
  */
     // Jessie 
     public Vector3 getSteering() {
+
+        Vector3 pos = new Vector3(0f, 0f, 0f);
+        Vector3 velo;
+        if (chasePlayer) {
+            pos = playerTarget.position;
+            velo = playerTarget.velocity;
+
+        } else {
+            pos = target.position;
+            velo = target.velocity;
+        }
         // work out the distance to target  
-        Vector3 direction = target.position - agent.position;
+        Vector3 direction = pos - agent.position;
         float distance = direction.magnitude;
 
         // work out our current speed
@@ -135,7 +144,7 @@ public class SteeringBehavior : MonoBehaviour {
         }
         pred = prediction;
         // get target's new position 
-        Vector3 targetPos = target.position + target.velocity * prediction;
+        Vector3 targetPos = pos + velo * prediction;
 
         return targetPos; // return the position
     }
@@ -146,7 +155,16 @@ public class SteeringBehavior : MonoBehaviour {
         (from assignment 1)
     */
     public Vector3 Pursue() {
+        Vector3 pos = new Vector3(0f, 0f, 0f);
+        Vector3 velo;
+        if (chasePlayer) {
+            pos = playerTarget.position;
+            velo = playerTarget.velocity;
 
+        } else {
+            pos = target.position;
+            velo = target.velocity;
+        }
         // call to getSteering()
         Vector3 targetPosition = getSteering();
         // get the direction to the target 
@@ -155,7 +173,8 @@ public class SteeringBehavior : MonoBehaviour {
         steering.Normalize();
         steering *= maxAcceleration;
         // for clarity
-        agent.DrawCircle(target.position + target.velocity * pred, 0.4f);
+
+        agent.DrawCircle(pos + velo * pred, 0.4f);
         //output the steering
         return steering;
 
@@ -174,8 +193,14 @@ public class SteeringBehavior : MonoBehaviour {
         // the velocity is along this direction, at full speed 
         steering.Normalize();
         steering *= maxAcceleration;
+        Vector3 pos = new Vector3(0f, 0f, 0f);
+        if (chasePlayer) {
+            pos = playerTarget.position;
+        } else {
+            pos = target.position;
+        }
         // for clarity
-        agent.DrawCircle(target.position + target.velocity * pred, 0.4f);
+        agent.DrawCircle(pos + target.velocity * pred, 0.4f);
         //output the steering
         return steering;
 
@@ -448,11 +473,7 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 rayStartPos = agent.position; // - agent.velocity.normalized * 0.01f;
         rayStartPos.z += frontRayPosition;
 
-<<<<<<< HEAD
-        if ( Physics.SphereCast(rayStartPos, 0.1f, agentVelocity, out hit, raysLength) ) {
-                collisionPosition = hit.point;
-=======
-        if ( Physics.SphereCast(rayStartPos, 0.8f, agentVelocity, out hit, raysLength) ) {
+        if ( Physics.SphereCast(rayStartPos, 1f, agentVelocity, out hit, raysLength) ) {
                 collisionPosition = hit.transform.position;
 >>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
                 collisionNormal = hit.normal;

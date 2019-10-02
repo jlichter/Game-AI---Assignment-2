@@ -11,7 +11,9 @@ public class PlayerController : MonoBehaviour {
 
     public float speed;     
     private Rigidbody rb;
-
+    [Header("Our variables for player")]
+    public Vector3 position;        // local pointer to the RigidBody's Location vector
+    public Vector3 velocity;        // Will be needed for dynamic steering
     /// <summary>
     /// Start() is called only once for any GameObject. Here, we want to retrieve
     /// the RigidBody and save it in variable rb. We do this now and save it so we
@@ -19,6 +21,8 @@ public class PlayerController : MonoBehaviour {
     /// </summary>
     void Start() {
         rb = GetComponent<Rigidbody>();
+        position = rb.position;
+        velocity = rb.velocity;
     }
 
     /// <summary>
@@ -34,6 +38,8 @@ public class PlayerController : MonoBehaviour {
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
         rb.AddForce(movement * speed);
+        velocity = rb.velocity;
     }
+
 
 }
