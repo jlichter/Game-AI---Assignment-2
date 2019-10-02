@@ -133,6 +133,7 @@ public class MapStateManager : MonoBehaviour {
                break;
 
            case 3:
+                EnterMapStateThree();
                break;
        }
      
@@ -240,18 +241,19 @@ public class MapStateManager : MonoBehaviour {
 
     private void EnterMapStateTwo()
     {
-        narrator.text = "Entering Phase Two";
-
-        currentPhase = 3; // or whatever. Won't necessarily advance the phase every time
+        narrator.text = "Entering Phase Two: more intelligent wander";
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 4;
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
     }
 
     private void EnterMapStateThree()
     {
-        narrator.text = "Entering Phase Three";
+        narrator.text = "Entering Phase Three: Chase the NPC";
 
-        currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
+
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 1;
+        spawnedNPCs[1].GetComponent<SteeringBehavior>().target = PlayerPrefab.GetComponent<NPCController>();
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
     }
