@@ -51,8 +51,13 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
+<<<<<<< HEAD
     public float raysLength = 5f; // holds the distance to look ahead for a collision 
     public float frontRayPosition = 0.1f;
+=======
+    public float raysLength = 3f; // holds the distance to look ahead for a collision 
+    public float frontRayPosition;
+>>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
     [Header("Collision Detection")]
     public Vector3 collisionPosition;
     public Vector3 collisionNormal;
@@ -63,7 +68,11 @@ public class SteeringBehavior : MonoBehaviour {
     protected void Start() {
         agent = GetComponent<NPCController>();
         wanderOrientation = agent.orientation;
+<<<<<<< HEAD
         line = GetComponent<LineRenderer>();
+=======
+        frontRayPosition = agent.position.z;
+>>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
     }
 
     public Vector3 Seek() {
@@ -439,8 +448,13 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 rayStartPos = agent.position; // - agent.velocity.normalized * 0.01f;
         rayStartPos.z += frontRayPosition;
 
+<<<<<<< HEAD
         if ( Physics.SphereCast(rayStartPos, 0.1f, agentVelocity, out hit, raysLength) ) {
                 collisionPosition = hit.point;
+=======
+        if ( Physics.SphereCast(rayStartPos, 0.8f, agentVelocity, out hit, raysLength) ) {
+                collisionPosition = hit.transform.position;
+>>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
                 collisionNormal = hit.normal;
                 return true;
         } else {
@@ -451,6 +465,7 @@ public class SteeringBehavior : MonoBehaviour {
     
     public Vector3 WallAvoidance() {
 
+<<<<<<< HEAD
         float avoidDistance = 10f;
         if (CollisionDetection()) {
             Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
@@ -458,14 +473,20 @@ public class SteeringBehavior : MonoBehaviour {
             line.positionCount = 3;
             line.useWorldSpace = true;
             line.SetPositions(linePoints);
+=======
+        float avoidDistance = 2f;
+
+        if (CollisionDetection()) {
+            Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
+>>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
             Vector3 direction = newTargetPos - agent.position;
             direction.Normalize();
             direction *= maxAcceleration;
             return direction;
+        } else {
+            return new Vector3(0f, 0f, 0f);
         }
-        else {
-            return Vector3.zero;
-        }
+ 
 
     }
     

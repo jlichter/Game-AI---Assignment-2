@@ -115,7 +115,7 @@ public class MapStateManager : MonoBehaviour {
         // Check if a game event had caused a change of phase.
         if (currentPhase == previousPhase)
             return;
-
+        spawnedNPCs.Clear();
 
         // FRAMEWORK VERSION
        // If we get here, we've been given a new phase, from either source
@@ -231,6 +231,8 @@ public class MapStateManager : MonoBehaviour {
     private void EnterMapStateOne() { // note => ** PURSUE AND EVADE, WITH WALL AVOIDANCE **
         narrator.text = "In Phase One, we're going to demonstrate pursue and evade, with wall avoidance.";
         Debug.Log("we got into state one");
+        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
+        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
         spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
         spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
         spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
@@ -242,6 +244,8 @@ public class MapStateManager : MonoBehaviour {
     private void EnterMapStateTwo()
     {
         narrator.text = "Entering Phase Two: more intelligent wander";
+        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
+        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
         spawnedNPCs[1].GetComponent<NPCController>().phase = 4;
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
@@ -250,7 +254,8 @@ public class MapStateManager : MonoBehaviour {
     private void EnterMapStateThree()
     {
         narrator.text = "Entering Phase Three: Chase the NPC";
-
+        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
+        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
 
         spawnedNPCs[1].GetComponent<NPCController>().phase = 1;
         spawnedNPCs[1].GetComponent<SteeringBehavior>().target = PlayerPrefab.GetComponent<NPCController>();
