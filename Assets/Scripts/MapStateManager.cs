@@ -54,6 +54,7 @@ public class MapStateManager : MonoBehaviour {
 
     [Header("our variables for MapStateManager")]
     GameObject wolfNPC;
+    public PlayerController thePlayer;
     //GameObject
 
     // Use this for initialization. Create any initial NPCs here and store them in the 
@@ -70,8 +71,7 @@ public class MapStateManager : MonoBehaviour {
 
         spawnedNPCs = new List<GameObject>();
         // add to list, with call to SpawnItem (returns game object) --> args ( game object location, the prefab, the target, the text, 
-        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
-        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
+        
 
         //Invoke("SpawnWolf", 12);
         //Invoke("Meeting1", 30);
@@ -117,6 +117,7 @@ public class MapStateManager : MonoBehaviour {
             return;
         spawnedNPCs.Clear();
 
+        spawnedNPCs.Clear();
         // FRAMEWORK VERSION
        // If we get here, we've been given a new phase, from either source
        switch (currentPhase) {
@@ -234,7 +235,9 @@ public class MapStateManager : MonoBehaviour {
         spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
         spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
         spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+        spawnedNPCs[0].GetComponent<SteeringBehavior>().chasePlayer = false;
         spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
+        spawnedNPCs[1].GetComponent<SteeringBehavior>().chasePlayer = false;
         spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
         spawnedNPCs[1].GetComponent<NPCController>().phase = 2;
         //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
@@ -256,10 +259,10 @@ public class MapStateManager : MonoBehaviour {
         narrator.text = "Entering Phase Three: Chase the NPC";
         spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
         spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
-
+        spawnedNPCs[1].GetComponent<SteeringBehavior>().chasePlayer = true;
         spawnedNPCs[1].GetComponent<NPCController>().phase = 1;
-        spawnedNPCs[1].GetComponent<SteeringBehavior>().target = PlayerPrefab.GetComponent<NPCController>();
-
+        //spawnedNPCs[1].GetComponent<SteeringBehavior>().target = PlayerPrefab.GetComponent<NPCController>();
+       
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
     }
 
