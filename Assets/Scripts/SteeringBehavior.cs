@@ -49,7 +49,7 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
-    public float raysLength = 6f; // holds the distance to look ahead for a collision 
+    public float raysLength = 3f; // holds the distance to look ahead for a collision 
     public float frontRayPosition = 0.1f;
     [Header("Collision Detection")]
     public Vector3 collisionPosition;
@@ -302,7 +302,7 @@ public class SteeringBehavior : MonoBehaviour {
         return steering.normalized * maxAcceleration;
     }
 
-    public void CollisionPrediction() {
+    public Vector3 CollisionPrediction() {
 
         //class CollisionAvoidance :
 
@@ -314,7 +314,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         // # Holds a list of potential targets
         // targets
-      // GameObject targets[] = new List<GameObject>;
+        // GameObject targets[] = new List<GameObject>;
         // # Holds the collision radius of a character (we assume
         // # all characters have the same radius here)
         // radius
@@ -325,7 +325,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         // # Store the first collision time
         // shortestTime = infinity
-        float shortestTime = Mathf.Infinity;
+        //float shortestTime = Mathf.Infinity;
         // # Store the target that collides then, and other data
         // # that we will need and can avoid recalculating
         // firstTarget = None
@@ -386,8 +386,23 @@ public class SteeringBehavior : MonoBehaviour {
 
         // # Return the steering
         // return steering
-        
-}
+
+        Vector3 distance = target.position - agent.position;
+        Vector3 veloDiff = target.velocity - agent.velocity;
+        float t_closest = -Vector3.Dot(distance, veloDiff) / Mathf.Pow(veloDiff.magnitude, 2f);
+        if(t_closest < 0) {
+            return Vector3.zero;
+        }
+        Vector3 agentFuture = agent.position + agent.velocity * t_closest;
+        Vector3 targetFuture = target.position + target.velocity * t_closest;
+        if((agentFuture - targetFuture).magnitude < 1f) {
+            Vector3 evasion = -agent.velocity;
+            return evasion.normalized * maxAcceleration;
+        }
+        else {
+            return Vector3.zero;
+        }
+    }
 /*
     public bool CollisionDetection(Vector3 rayStart, RaycastHit hitPoint, out Vector3 collisionPos, out Vector3 collisionNorm) {
 
@@ -418,10 +433,10 @@ public class SteeringBehavior : MonoBehaviour {
 
         Vector3 agentVelocity = agent.velocity;
         agentVelocity.Normalize();
-        Vector3 rayStartPos = agent.position;
+        Vector3 rayStartPos = agent.position; // - agent.velocity.normalized * 0.01f;
 
-        if ( Physics.SphereCast(rayStartPos, 1f, agentVelocity, out hit, raysLength) ) {
-                collisionPosition = hit.point;
+        if ( Physics.SphereCast(rayStartPos, 0.1f, agentVelocity, out hit, raysLength) ) {
+                collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
                 return true;
         } else {
@@ -432,14 +447,17 @@ public class SteeringBehavior : MonoBehaviour {
     
     public Vector3 WallAvoidance() {
 
-        float avoidDistance = 5f;
-
-
-            Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
+        float avoidDistance = 2f;
+        if (CollisionDetection()) {
+            Vector3 newTargetPos = collisionPosition + collisionNormal * avoidDistance;
             Vector3 direction = newTargetPos - agent.position;
             direction.Normalize();
             direction *= maxAcceleration;
-            return direction; 
+            return direction;
+        }
+        else {
+            return Vector3.zero;
+        }
 
     }
     
