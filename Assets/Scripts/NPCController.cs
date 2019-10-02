@@ -46,6 +46,7 @@ public class NPCController : MonoBehaviour {
                 if(label) {
                     label.text = name.Replace("(Clone)", "") + "\nWaiting for input";
                 }
+          
                 break;
 
             case 1: /*note =>  PURSUE AND FACE */
@@ -54,23 +55,22 @@ public class NPCController : MonoBehaviour {
                     // do this for each phase
                     label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue and Face algorithm(s)"; 
                 }
-                linear = ai.Pursue();   // For example
-                angular = ai.Face();    // For example
 
+                linear = ai.Pursue();
+                angular = ai.Face();
+                if (ai.CollisionDetection()) {
+                    linear = ai.WallAvoidance();
+                }
+        
                 break;
             case 2: /* note => EVADE (testing wall avoidance too) */
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
-
                 linear = ai.Evade();
-                Vector3 temp = new Vector3(0f, 0f, 0f);
-                if(ai.WallAvoidance() != temp) {
+                if (ai.CollisionDetection()) {
                     linear = ai.WallAvoidance();
-                } else {
-                    linear = ai.Evade();
                 }
-                
 
                 break;
             case 3: /* note => ARRIVE */

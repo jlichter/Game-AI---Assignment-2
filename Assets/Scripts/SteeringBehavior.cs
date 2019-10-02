@@ -49,8 +49,11 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
-    public float raysLength = 20f; // holds the distance to look ahead for a collision 
-    public float frontRayPosition = 0.5f;
+    public float raysLength = 6f; // holds the distance to look ahead for a collision 
+    public float frontRayPosition = 0.1f;
+    [Header("Collision Detection")]
+    public Vector3 collisionPosition;
+    public Vector3 collisionNormal;
 
     // (jessie) for collision avoidance, need list of potential targets 
    // public GameObject[] targets;
@@ -300,7 +303,95 @@ public class SteeringBehavior : MonoBehaviour {
         return steering.normalized * maxAcceleration;
     }
 
+    public void CollisionPrediction() {
+
+        //class CollisionAvoidance :
+
+        // # Holds the kinematic data for the character
+        //  character
+
+        // # Holds the maximum acceleration
+        // maxAcceleration
+
+        // # Holds a list of potential targets
+        // targets
+      // GameObject targets[] = new List<GameObject>;
+        // # Holds the collision radius of a character (we assume
+        // # all characters have the same radius here)
+        // radius
+
+        // def getSteering():
+
+        // # 1. Find the target that’s closest to collision
+
+        // # Store the first collision time
+        // shortestTime = infinity
+        float shortestTime = Mathf.Infinity;
+        // # Store the target that collides then, and other data
+        // # that we will need and can avoid recalculating
+        // firstTarget = None
+
+        // firstMinSeparation
+        // firstDistance
+        // firstRelativePos
+        // firstRelativeVel
+
+        // # Loop through each target
+        // for target in targets:
+
+        // # Calculate the time to collision
+        // relativePos = target.position - character.position
+        // relativeVel = target.velocity - character.velocity
+        // relativeSpeed = relativeVel.length()
+        // timeToCollision = (relativePos.relativeVel) /
+        // (relativeSpeed* relativeSpeed)
+
+        // # Check if it is going to be a collision at all
+        // distance = relativePos.length()
+        // minSeparation = distance-relativeSpeed* shortestTime
+        // if minSeparation > 2*radius: continue
+
+        // # Check if it is the shortest
+        // if timeToCollision > 0 and
+        //3 Steering Behaviors 89
+        // timeToCollision<shortestTime:
+
+        // # Store the time, target and other data
+        // shortestTime = timeToCollision
+        // firstTarget = target
+        // firstMinSeparation = minSeparation
+        // firstDistance = distance
+        // firstRelativePos = relativePos
+        // firstRelativeVel = relativeVel
+
+        // # 2. Calculate the steering
+        //
+        // # If we have no target, then exit
+        // if not firstTarget: return None
+
+        // # If we’re going to hit exactly, or if we’re already
+        // # colliding, then do the steering based on current
+        // # position.
+        // if firstMinSeparation <= 0 or distance< 2*radius:
+        // relativePos = firstTarget.position -
+        // character.position
+
+        // # Otherwise calculate the future relative position
+        // else:
+        // relativePos = firstRelativePos +
+        // firstRelativeVel* shortestTime
+
+        // # Avoid the target
+        // relativePos.normalize()
+        // steering.linear = relativePos* maxAcceleration
+
+        // # Return the steering
+        // return steering
+        
+}
+/*
     public bool CollisionDetection(Vector3 rayStart, RaycastHit hitPoint, out Vector3 collisionPos, out Vector3 collisionNorm) {
+
 
         collisionPos = new Vector3(0f, 0f, 0f); 
         collisionNorm = new Vector3(0f, 0f, 0f);
@@ -308,18 +399,52 @@ public class SteeringBehavior : MonoBehaviour {
         agentVelocity.Normalize();
         // see if sphere cast detects collision ahead of player travel
         // if so, set the collision position and the collision normal 
-        if (Physics.SphereCast(rayStart, 0.1f, agentVelocity, out hitPoint, raysLength)) {
-            Debug.Log("here!");
+        if (Physics.SphereCast(rayStart, 0.7f, agentVelocity, out hitPoint, raysLength)) {
+
             collisionPos = hitPoint.point;
             collisionNorm = hitPoint.normal;
             Debug.DrawLine(rayStart, hitPoint.point);
             return true; // if collision detected, return true 
+
+        } else {
+            return false; // else, no collision, return false
         }
 
-        return false; // else, no collision, return false 
+    }
+    */
+    public bool CollisionDetection() {
+        
+        // holds a collision detector 
+        RaycastHit hit;
+
+        Vector3 agentVelocity = agent.velocity;
+        agentVelocity.Normalize();
+        Vector3 rayStartPos = agent.position;
+
+        if ( Physics.SphereCast(rayStartPos, 1f, agentVelocity, out hit, raysLength) ) {
+                collisionPosition = hit.point;
+                collisionNormal = hit.normal;
+                return true;
+        } else {
+            return false;
+        }
+     
+    }
+    
+    public Vector3 WallAvoidance() {
+
+        float avoidDistance = 5f;
+
+
+            Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
+            Vector3 direction = newTargetPos - agent.position;
+            direction.Normalize();
+            direction *= maxAcceleration;
+            return direction; 
 
     }
-
+    
+    /*
     public Vector3 WallAvoidance() {
 
         // holds the information about 
@@ -328,7 +453,7 @@ public class SteeringBehavior : MonoBehaviour {
         float avoidDistance = 5f;
         // calculate the collision ray vector 
         Vector3 rayStartPos = agent.position;
-        rayStartPos.z += frontRayPosition;
+       // rayStartPos.z += frontRayPosition;
         Vector3 cpTemp = new Vector3(0f, 0f, 0f);
         Vector3 cnTemp = new Vector3(0f, 0f, 0f);
 
@@ -352,18 +477,12 @@ public class SteeringBehavior : MonoBehaviour {
         }
 
     }
+    */
     // todo collision prediction
     // todo collision detection
     // todo chase the player
     // todo more intellgient wander
     // todo more intelligent behavior overall 
 
-    
-    private void Rays() {
-
-
-
-        
-    }
 
 }
