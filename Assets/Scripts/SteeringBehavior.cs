@@ -415,29 +415,7 @@ public class SteeringBehavior : MonoBehaviour {
             return Vector3.zero;
         }
     }
-/*
-    public bool CollisionDetection(Vector3 rayStart, RaycastHit hitPoint, out Vector3 collisionPos, out Vector3 collisionNorm) {
 
-
-        collisionPos = new Vector3(0f, 0f, 0f); 
-        collisionNorm = new Vector3(0f, 0f, 0f);
-        Vector3 agentVelocity = agent.velocity;
-        agentVelocity.Normalize();
-        // see if sphere cast detects collision ahead of player travel
-        // if so, set the collision position and the collision normal 
-        if (Physics.SphereCast(rayStart, 0.7f, agentVelocity, out hitPoint, raysLength)) {
-
-            collisionPos = hitPoint.point;
-            collisionNorm = hitPoint.normal;
-            Debug.DrawLine(rayStart, hitPoint.point);
-            return true; // if collision detected, return true 
-
-        } else {
-            return false; // else, no collision, return false
-        }
-
-    }
-    */
     public bool CollisionDetection() {
         
         // holds a collision detector 
@@ -448,13 +426,8 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 rayStartPos = agent.position; // - agent.velocity.normalized * 0.01f;
         rayStartPos.z += frontRayPosition;
 
-<<<<<<< HEAD
-        if ( Physics.SphereCast(rayStartPos, 0.1f, agentVelocity, out hit, raysLength) ) {
-                collisionPosition = hit.point;
-=======
         if ( Physics.SphereCast(rayStartPos, 0.8f, agentVelocity, out hit, raysLength) ) {
                 collisionPosition = hit.transform.position;
->>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
                 collisionNormal = hit.normal;
                 return true;
         } else {
@@ -465,7 +438,6 @@ public class SteeringBehavior : MonoBehaviour {
     
     public Vector3 WallAvoidance() {
 
-<<<<<<< HEAD
         float avoidDistance = 10f;
         if (CollisionDetection()) {
             Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
@@ -473,12 +445,6 @@ public class SteeringBehavior : MonoBehaviour {
             line.positionCount = 3;
             line.useWorldSpace = true;
             line.SetPositions(linePoints);
-=======
-        float avoidDistance = 2f;
-
-        if (CollisionDetection()) {
-            Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
->>>>>>> 213de80e0c77f40296a6cba035c24a210ef02ab9
             Vector3 direction = newTargetPos - agent.position;
             direction.Normalize();
             direction *= maxAcceleration;
@@ -490,45 +456,6 @@ public class SteeringBehavior : MonoBehaviour {
 
     }
     
-    /*
-    public Vector3 WallAvoidance() {
-
-        // holds the information about 
-        RaycastHit hit = new RaycastHit();
-        // holds the minimum distance to a wall 
-        float avoidDistance = 5f;
-        // calculate the collision ray vector 
-        Vector3 rayStartPos = agent.position;
-       // rayStartPos.z += frontRayPosition;
-        Vector3 cpTemp = new Vector3(0f, 0f, 0f);
-        Vector3 cnTemp = new Vector3(0f, 0f, 0f);
-
-        // find the collision
-        if (CollisionDetection(rayStartPos, hit, out cpTemp, out cnTemp)) {
-
-            Vector3 collisionPosition = cpTemp;
-            Vector3 collisionNormal = cnTemp;
-            Vector3 newPosition = -collisionPosition + collisionNormal * avoidDistance;
-            // Get the direction to the target
-            Vector3 direction = newPosition - agent.position;
-            // The velocity is along this direction, at full speed
-            direction.Normalize();
-            direction *= maxAcceleration;
-            return direction;
-
-        } else {
-            //if no collision, do nothing 
-            return new Vector3(0f,0f,0f);
-
-        }
-
-    }
-    */
-    // todo collision prediction
-    // todo collision detection
-    // todo chase the player
-    // todo more intellgient wander
-    // todo more intelligent behavior overall
 
     public float LookWhereYoureGoing() {
         // Create the structure to hold our output
