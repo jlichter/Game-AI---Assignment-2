@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657993, g: 0.49641424, b: 0.57481825, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657928, g: 0.4964131, b: 0.5748174, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -229,8 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62e8a1fd5de0dc44b88e66ade04a75df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 1492082692082636, guid: 656f0980c97e88745b50615b4f52aff8,
-    type: 3}
+  PlayerPrefab: {fileID: 1950617231}
   HunterPrefab: {fileID: 1153476826827624, guid: cb9f2757d4b88f94298bd5a6f5de77aa,
     type: 3}
   WolfPrefab: {fileID: 1195697530455450, guid: 0fcd3077ea816ff4d9388e7425919d2b, type: 3}
@@ -254,6 +253,7 @@ MonoBehaviour:
   - {fileID: 1987999572}
   - {fileID: 590417685}
   narrator: {fileID: 746086918}
+  thePlayer: {fileID: 0}
 --- !u!4 &57836076
 Transform:
   m_ObjectHideFlags: 0
@@ -630,6 +630,10 @@ PrefabInstance:
     - target: {fileID: 1492082692082636, guid: 656f0980c97e88745b50615b4f52aff8, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1492082692082636, guid: 656f0980c97e88745b50615b4f52aff8, type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4668367045740698, guid: 656f0980c97e88745b50615b4f52aff8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2686,6 +2690,76 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 417085944}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1950617232 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114855803710573834, guid: 656f0980c97e88745b50615b4f52aff8,
+    type: 3}
+  m_PrefabInstance: {fileID: 417085944}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950617231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60c36cfcd6da9ef4aa69fa473b1853e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1950617238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950617231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1341c18acf272bb48913ced012b4f2f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  orientation: 0
+  rotation: 0
+  maxSpeed: 0
+  phase: 0
+  label: {fileID: 0}
+  isPlayer: 1
+  player: {fileID: 1950617232}
+--- !u!114 &1950617239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950617231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c21e7bc528b1e7b4d93b22c8cef3b897, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 1950617238}
+  target: {fileID: 0}
+  maxPrediction: 0
+  maxAcceleration: 0
+  maxSpeed: 0
+  targetRadiusL: 0
+  slowRadiusL: 0
+  timeToTarget: 0
+  maxRotation: 0
+  maxAngularAcceleration: 0
+  targetRadiusA: 0
+  slowRadiusA: 0
+  wanderOffset: 0
+  wanderRadius: 0
+  wanderRate: 0
+  Path: []
+  current: 0
+  pred: 0
+  steeringPlayer: 1
+  playerTarget: {fileID: 0}
+  wanderCircleCenter: {x: 0, y: 0, z: 0}
+  raysLength: 7
+  frontRayPosition: 0
+  collisionPosition: {x: 0, y: 0, z: 0}
+  collisionNormal: {x: 0, y: 0, z: 0}
 --- !u!1 &1984420580
 GameObject:
   m_ObjectHideFlags: 0

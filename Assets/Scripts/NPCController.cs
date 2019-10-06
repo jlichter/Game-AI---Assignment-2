@@ -26,6 +26,9 @@ public class NPCController : MonoBehaviour {
     public Text label;              // Used to displaying text nearby the agent as it moves around
     LineRenderer line;              // Used to draw circles and other things
 
+    [Header("Our variables")]
+    public bool isPlayer;
+    public PlayerController player;
 
 
     private void Start() {
@@ -34,6 +37,8 @@ public class NPCController : MonoBehaviour {
         line = GetComponent<LineRenderer>();
         position = rb.position;
         orientation = transform.eulerAngles.y;
+        
+        
     }
 
     /// <summary>
@@ -55,15 +60,8 @@ public class NPCController : MonoBehaviour {
                     // do this for each phase
                     label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue and Face algorithm(s)"; 
                 }
-
                 linear = ai.Pursue();
-                angular = ai.Face();
-                if (ai.WallAvoidance() != new Vector3(0f, 0f, 0f)) {
-                    linear = ai.WallAvoidance();
-                } else {
-                    linear = ai.Pursue();
-                    angular = ai.Face();
-                }
+        
 
                 break;
 
@@ -71,14 +69,8 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
-                linear = ai.Evade();
-                if(ai.WallAvoidance() != new Vector3(0f, 0f, 0f)) {
-                    linear = ai.WallAvoidance();
-                } else {
-                    linear = ai.Evade();
-                }
-               
-
+           
+              
                 break;
             case 3: /* note => ARRIVE */
                 if (label) {
@@ -91,12 +83,12 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Wander algorithm";
                 }
-                Vector3 wallAvoid = ai.WallAvoidance();
+              //  Vector3 wallAvoid = ai.WallAvoidance();
                 
-                linear = ai.Wander() + 4 * wallAvoid;
-                angular = 2*ai.LookWhereYoureGoing();
+               // linear = ai.Wander() + 4 * wallAvoid;
+               // angular = 2*ai.LookWhereYoureGoing();
                 
-                DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
+                //DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
                 break;
             case 5: // note ==> PURSUING PLAYER 
                  if (label) {
@@ -107,6 +99,11 @@ public class NPCController : MonoBehaviour {
                 // angular = ai.whatever();
                 break;
         }
+        if (isPlayer) {
+            linear = player.GetComponent<PlayerController>().velocity;
+
+        }
+
         update(linear, angular, Time.deltaTime);
         if (label) {
             label.transform.position = Camera.main.WorldToScreenPoint(this.transform.position);
@@ -114,19 +111,26 @@ public class NPCController : MonoBehaviour {
     }
 
     private void update(Vector3 steeringlin, float steeringang, float time) {
-        // Update the orientation, velocity and rotation
-        orientation += rotation * time;
-        velocity += steeringlin * time;
-        rotation += steeringang * time;
 
-        if (velocity.magnitude > maxSpeed) {
-            velocity.Normalize();
-            velocity *= maxSpeed;
+        if (!isPlayer) {
+            // Update the orientation, velocity and rotation
+            orientation += rotation * time;
+            velocity += steeringlin * time;
+            rotation += steeringang * time;
+
+            if (velocity.magnitude > maxSpeed) {
+                velocity.Normalize();
+                velocity *= maxSpeed;
+            }
+
+            rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
+            position = rb.position;
+            rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
+        } else {
+            position = player.GetComponent<PlayerController>().position;
+            velocity = player.GetComponent<PlayerController>().velocity;
         }
 
-        rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
-        position = rb.position;
-        rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
     }
 
     // <summary>

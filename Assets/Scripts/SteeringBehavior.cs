@@ -48,7 +48,7 @@ public class SteeringBehavior : MonoBehaviour {
 
     [Header("Our Variables")]
     public float pred;
-    public bool chasePlayer;
+    public bool steeringPlayer;
     public PlayerController playerTarget;
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
@@ -63,13 +63,37 @@ public class SteeringBehavior : MonoBehaviour {
    // public GameObject[] targets;
 
     protected void Start() {
-        agent = GetComponent<NPCController>();
-        wanderOrientation = agent.orientation;
-        line = GetComponent<LineRenderer>();
-        frontRayPosition = agent.position.z;
-        playerTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+
+            agent = GetComponent<NPCController>();
+            wanderOrientation = agent.orientation;
+            line = GetComponent<LineRenderer>();
+            frontRayPosition = agent.position.z;
+        
+ 
     }
 
+    struct Behavior {
+
+        public int weight;
+        public float Rot;
+        public Vector3 behavior;
+    }
+
+    public float getOrientation(float currentOrientation, Vector3 velocity) {
+
+        float newOrientation;
+        // make sure we have a velocity 
+        if(velocity != Vector3.zero) {
+            // calculate orientation using arc tangent of the velocity components
+            // return 
+            newOrientation = Mathf.Atan2(-velocity.x, velocity.z);
+            return newOrientation;
+        } else {
+            // otherwise use the current orientation 
+            return currentOrientation;
+        }
+
+    }
     public Vector3 Seek() {
         // Get the direction to the target
         Vector3 direction = target.position - agent.position;
@@ -113,18 +137,8 @@ public class SteeringBehavior : MonoBehaviour {
     // Jessie 
     public Vector3 getSteering() {
 
-        Vector3 pos = new Vector3(0f, 0f, 0f);
-        Vector3 velo;
-        if (chasePlayer) {
-            pos = playerTarget.position;
-            velo = playerTarget.velocity;
-
-        } else {
-            pos = target.position;
-            velo = target.velocity;
-        }
         // work out the distance to target  
-        Vector3 direction = pos - agent.position;
+        Vector3 direction = target.position - agent.position;
         float distance = direction.magnitude;
 
         // work out our current speed
@@ -141,7 +155,9 @@ public class SteeringBehavior : MonoBehaviour {
         }
         pred = prediction;
         // get target's new position 
-        Vector3 targetPos = pos + velo * prediction;
+        Vector3 targetPos = target.position + target.velocity * prediction;
+        Debug.Log("heres the player pos!!");
+        Debug.Log(target.position);
 
         return targetPos; // return the position
     }
@@ -152,26 +168,17 @@ public class SteeringBehavior : MonoBehaviour {
         (from assignment 1)
     */
     public Vector3 Pursue() {
-        Vector3 pos = new Vector3(0f, 0f, 0f);
-        Vector3 velo;
-        if (chasePlayer) {
-            pos = playerTarget.position;
-            velo = playerTarget.velocity;
 
-        } else {
-            pos = target.position;
-            velo = target.velocity;
-        }
         // call to getSteering()
         Vector3 targetPosition = getSteering();
         // get the direction to the target 
-        Vector3 steering = targetPosition - agent.position;
+        Vector3 steering = target.position - agent.position;
         // the velocity is along this direction, at full speed 
         steering.Normalize();
         steering *= maxAcceleration;
         // for clarity
 
-        agent.DrawCircle(pos + velo * pred, 0.4f);
+        agent.DrawCircle(target.position + target.velocity * pred, 0.4f);
         //output the steering
         return steering;
 
@@ -190,14 +197,8 @@ public class SteeringBehavior : MonoBehaviour {
         // the velocity is along this direction, at full speed 
         steering.Normalize();
         steering *= maxAcceleration;
-        Vector3 pos = new Vector3(0f, 0f, 0f);
-        if (chasePlayer) {
-            pos = playerTarget.position;
-        } else {
-            pos = target.position;
-        }
         // for clarity
-        agent.DrawCircle(pos + target.velocity * pred, 0.4f);
+        agent.DrawCircle(target.position + target.velocity * pred, 0.4f);
         //output the steering
         return steering;
 
@@ -330,7 +331,7 @@ public class SteeringBehavior : MonoBehaviour {
         if (target == null) {
             target = new NPCController();
         }
-        target.orientation = Mathf.Atan2(steering.x, steering.z);
+        target.orientation = Mathf.Atan2(-steering.x, steering.z);
         // Now return the linear acceleration to be at full
         // acceleration in the direction of the orientation
         return steering.normalized * maxAcceleration;
@@ -437,7 +438,7 @@ public class SteeringBehavior : MonoBehaviour {
             return Vector3.zero;
         }
     }
-
+    // return a structure 
     public bool CollisionDetection() {
         
         // holds a collision detector 
@@ -459,6 +460,14 @@ public class SteeringBehavior : MonoBehaviour {
      
     }
     
+    /*
+    public Vector3 WallAvoidance() {
+
+
+
+
+    }
+    */
     public Vector3 WallAvoidance() {
 
         float avoidDistance = 10f;

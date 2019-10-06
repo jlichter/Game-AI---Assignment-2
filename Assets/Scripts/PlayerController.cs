@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour {
 
         rb.AddForce(movement * speed);
         velocity = rb.velocity;
+        position = rb.position;
     }
 
 
