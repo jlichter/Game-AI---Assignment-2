@@ -54,28 +54,46 @@ public class NPCController : MonoBehaviour {
           
                 break;
 
-            case 1: /*note =>  PURSUE AND FACE */
+            case 1: /*note =>  PURSUE (testing with wall avoidance / collision detection too) */
                 if (label) {
                     // replace "First algorithm" with the name of the actual algorithm you're demoing
                     // do this for each phase
-                    label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue and Face algorithm(s)"; 
+                    label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue algorithm(s)"; 
                 }
-                linear = ai.Pursue();
-        
+                Behavior aiAvoidP = new Behavior(3f, 0f, ai.WallAvoidance());
+                Behavior aiPursue = new Behavior(1f, 0f, ai.Pursue());
+                if(aiAvoidP.behavior != Vector3.zero) {
+                    aiPursue.weight = 0.1f;
+                } else {
+                    aiPursue.weight = 1f;
+                }
+                linear = (aiPursue.weight * aiPursue.behavior) + (aiAvoidP.weight * aiAvoidP.behavior);
+
 
                 break;
 
-            case 2: /* note => EVADE (testing wall avoidance too) */
+            case 2: /* note => EVADE (testing wall avoidance/ collision detection too) */
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Evade algorithm(s)";
                 }
-           
-              
+                Behavior aiAvoidE = new Behavior(3f, 0f, ai.WallAvoidance());
+                Behavior aiEvade = new Behavior(0.8f, 0f, ai.Evade());
+                if (aiAvoidE.behavior != Vector3.zero) {
+                    aiEvade.weight = 0.1f;
+                } else {
+                    aiEvade.weight = 1f;
+                }
+                linear = (aiEvade.weight * aiEvade.behavior) + (aiAvoidE.weight * aiAvoidE.behavior);
+                Debug.Log(linear);
+               // linear = 
                 break;
             case 3: /* note => ARRIVE */
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Arrive algorithm";
                 }
+                Behavior aiAvoidA = new Behavior(3f, 0f, ai.WallAvoidance());
+                Behavior aiArrive = new Behavior(1f, 0f, ai.Pursue());
+                linear = (aiArrive.weight * aiArrive.behavior) + (aiAvoidA.weight * aiAvoidA.behavior);
                 linear = ai.Arrive();
 
                 break;
@@ -83,18 +101,18 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Wander algorithm";
                 }
-              //  Vector3 wallAvoid = ai.WallAvoidance();
+                Vector3 wallAvoid = ai.WallAvoidance();
                 
-               // linear = ai.Wander() + 4 * wallAvoid;
-               // angular = 2*ai.LookWhereYoureGoing();
+                linear = ai.Wander() + 4 * wallAvoid;
+                angular = 2*ai.LookWhereYoureGoing();
                 
-                //DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
+                DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
                 break;
-            case 5: // note ==> PURSUING PLAYER 
+            case 5: // note ==> PURSUING PLAYER WITH COLLISION PREDICTION
                  if (label) {
-                    label.text = name.Replace("(Clone)", "") + "\nAlgorithm: pursue algorithm";
+                    label.text = name.Replace("(Clone)", "") + "chasing the player";
                 }
-
+                Vector3 showPrediction = ai.CollisionPrediction();
                 // linear = ai.whatever();  -- replace with the desired calls
                 // angular = ai.whatever();
                 break;
@@ -182,6 +200,18 @@ public class NPCController : MonoBehaviour {
     public void DestroyPoints() {
         if (line) {
             line.positionCount = 0;
+        }
+    }
+    struct Behavior {
+
+        public float weight;
+        public float Rot;
+        public Vector3 behavior;
+
+        public Behavior(float w, float r, Vector3 b) {
+            weight = w;
+            Rot = r;
+            behavior = b;
         }
     }
 

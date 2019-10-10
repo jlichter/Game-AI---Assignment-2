@@ -48,12 +48,12 @@ public class SteeringBehavior : MonoBehaviour {
 
     [Header("Our Variables")]
     public float pred;
-    public bool steeringPlayer;
     public PlayerController playerTarget;
+    public bool avoiding;
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
-    public float raysLength = 7f; // holds the distance to look ahead for a collision 
+    
     public float frontRayPosition;
     [Header("Collision Detection")]
     public Vector3 collisionPosition;
@@ -72,12 +72,7 @@ public class SteeringBehavior : MonoBehaviour {
  
     }
 
-    struct Behavior {
 
-        public int weight;
-        public float Rot;
-        public Vector3 behavior;
-    }
 
     public float getOrientation(float currentOrientation, Vector3 velocity) {
 
@@ -104,10 +99,6 @@ public class SteeringBehavior : MonoBehaviour {
         return direction;
     }
 
-    public Vector3 Flee()
-    {
-        return new Vector3(0f, 0f, 0f);
-    }
 
     /*
     // Calculate the target to pursue
@@ -156,8 +147,30 @@ public class SteeringBehavior : MonoBehaviour {
         pred = prediction;
         // get target's new position 
         Vector3 targetPos = target.position + target.velocity * prediction;
-        Debug.Log("heres the player pos!!");
-        Debug.Log(target.position);
+
+        return targetPos; // return the position
+    }
+
+    Vector3 Flee() {
+        // work out the distance away from target  
+        Vector3 direction = agent.position - target.position;
+        float distance = direction.magnitude;
+
+        // work out our current speed
+        float speed = agent.velocity.magnitude;
+
+        // for our end prediction
+        float prediction;
+
+        // check if speed is too small to give a reasonable prediction time 
+        if (speed <= distance / maxPrediction) {
+            prediction = maxPrediction;
+        } else {
+            prediction = distance / speed;
+        }
+        pred = prediction;
+        // get target's new position 
+        Vector3 targetPos = target.position + target.velocity * prediction;
 
         return targetPos; // return the position
     }
@@ -339,89 +352,6 @@ public class SteeringBehavior : MonoBehaviour {
 
     public Vector3 CollisionPrediction() {
 
-        //class CollisionAvoidance :
-
-        // # Holds the kinematic data for the character
-        //  character
-
-        // # Holds the maximum acceleration
-        // maxAcceleration
-
-        // # Holds a list of potential targets
-        // targets
-        // GameObject targets[] = new List<GameObject>;
-        // # Holds the collision radius of a character (we assume
-        // # all characters have the same radius here)
-        // radius
-
-        // def getSteering():
-
-        // # 1. Find the target that’s closest to collision
-
-        // # Store the first collision time
-        // shortestTime = infinity
-        //float shortestTime = Mathf.Infinity;
-        // # Store the target that collides then, and other data
-        // # that we will need and can avoid recalculating
-        // firstTarget = None
-
-        // firstMinSeparation
-        // firstDistance
-        // firstRelativePos
-        // firstRelativeVel
-
-        // # Loop through each target
-        // for target in targets:
-
-        // # Calculate the time to collision
-        // relativePos = target.position - character.position
-        // relativeVel = target.velocity - character.velocity
-        // relativeSpeed = relativeVel.length()
-        // timeToCollision = (relativePos.relativeVel) /
-        // (relativeSpeed* relativeSpeed)
-
-        // # Check if it is going to be a collision at all
-        // distance = relativePos.length()
-        // minSeparation = distance-relativeSpeed* shortestTime
-        // if minSeparation > 2*radius: continue
-
-        // # Check if it is the shortest
-        // if timeToCollision > 0 and
-        //3 Steering Behaviors 89
-        // timeToCollision<shortestTime:
-
-        // # Store the time, target and other data
-        // shortestTime = timeToCollision
-        // firstTarget = target
-        // firstMinSeparation = minSeparation
-        // firstDistance = distance
-        // firstRelativePos = relativePos
-        // firstRelativeVel = relativeVel
-
-        // # 2. Calculate the steering
-        //
-        // # If we have no target, then exit
-        // if not firstTarget: return None
-
-        // # If we’re going to hit exactly, or if we’re already
-        // # colliding, then do the steering based on current
-        // # position.
-        // if firstMinSeparation <= 0 or distance< 2*radius:
-        // relativePos = firstTarget.position -
-        // character.position
-
-        // # Otherwise calculate the future relative position
-        // else:
-        // relativePos = firstRelativePos +
-        // firstRelativeVel* shortestTime
-
-        // # Avoid the target
-        // relativePos.normalize()
-        // steering.linear = relativePos* maxAcceleration
-
-        // # Return the steering
-        // return steering
-
         Vector3 distance = target.position - agent.position;
         Vector3 veloDiff = target.velocity - agent.velocity;
         float t_closest = -Vector3.Dot(distance, veloDiff) / Mathf.Pow(veloDiff.magnitude, 2f);
@@ -432,6 +362,7 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 targetFuture = target.position + target.velocity * t_closest;
         if((agentFuture - targetFuture).magnitude < 1f) {
             Vector3 evasion = -agent.velocity;
+            agent.DrawCircle(evasion.normalized * maxAcceleration, 0.4f);
             return evasion.normalized * maxAcceleration;
         }
         else {
@@ -439,52 +370,48 @@ public class SteeringBehavior : MonoBehaviour {
         }
     }
     // return a structure 
-    public bool CollisionDetection() {
-        
+
+    public Vector3 WallAvoidance() {
+
         // holds a collision detector 
         RaycastHit hit;
-
+        //Ra
+        // Holds the minimum distance to a wall (i.e., how far
+        // to avoid collision) should be greater than the
+        // radius of the character.
+        float avoidDistance = 1f;
+        // Holds the distance to look ahead for a collision
+        // (i.e., the length of the collision ray)
+        float raysLength = 4f;
+        // Calculate the collision ray vector
         Vector3 agentVelocity = agent.velocity;
         agentVelocity.Normalize();
-        Vector3 rayStartPos = agent.position; // - agent.velocity.normalized * 0.01f;
-        rayStartPos.z += frontRayPosition;
+        // shoot the ray from the character's current position
+        Vector3 rayStartPos = agent.position;
+        // holds the collision position and normal if collision detected
+        Vector3 collisionPosition;
+        Vector3 collisionNormal;
+        // Find the collision
+        if (Physics.SphereCast(rayStartPos, 0.3f, agentVelocity, out hit, raysLength)) {
 
-        if ( Physics.SphereCast(rayStartPos, 0.8f, agentVelocity, out hit, raysLength) ) {
-
+            Debug.DrawRay(rayStartPos, hit.point);
+            if (hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
+               // collisionPosition = hit.point;
                 collisionNormal = hit.normal;
-                return true;
+
+                Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
+                Vector3 direction = newTargetPos - agent.position;
+                direction.Normalize();
+                direction *= maxAcceleration;
+                return direction;
+            } else {
+                return new Vector3(0.0f, 0.0f, 0.0f);
+            }
+
         } else {
-            return false;
+            return new Vector3(0.0f, 0.0f, 0.0f);
         }
-     
-    }
-    
-    /*
-    public Vector3 WallAvoidance() {
-
-
-
-
-    }
-    */
-    public Vector3 WallAvoidance() {
-
-        float avoidDistance = 10f;
-        if (CollisionDetection()) {
-            Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
-            Vector3[] linePoints = {agent.position, collisionPosition, collisionNormal * avoidDistance};
-            line.positionCount = 3;
-            line.useWorldSpace = true;
-            line.SetPositions(linePoints);
-            Vector3 direction = newTargetPos - agent.position;
-            direction.Normalize();
-            direction *= maxAcceleration;
-            return direction;
-        } else {
-            return new Vector3(0f, 0f, 0f);
-        }
- 
 
     }
     

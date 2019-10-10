@@ -62,7 +62,13 @@ public class MapStateManager : MonoBehaviour {
 
     void Start() {
         narrator.text = "Welcome to our demo of ai movement and collision avoidance. The following number" +
-            "keys exhibit these algorithms: "; //todo edit
+            "keys exhibit these algorithms: \n" +
+            "(1) Pursue and Evade with Wall Avoidance\n" +
+            "(2) More intelligent Wander\n"+
+            "(3) Chasing player with Collision Prediction\n"+
+            "(4) "; //todo edit
+        narrator.resizeTextForBestFit = true;
+        narrator.alignment = TextAnchor.UpperLeft;
 
         TreeCount = 100;    // TreeCount isn't showing up in Inspector
 
@@ -115,14 +121,21 @@ public class MapStateManager : MonoBehaviour {
             previousPhase = currentPhase;
         }
         // Check if a game event had caused a change of phase.
-        if (currentPhase == previousPhase)
+        if (currentPhase == previousPhase) {
+
             return;
+        }
+        foreach (GameObject go in spawnedNPCs) {
+            if(go.tag != "Player")
+                Destroy(go);
+        }
         spawnedNPCs.Clear();
 
-        spawnedNPCs.Clear();
+
+
         // FRAMEWORK VERSION
-       // If we get here, we've been given a new phase, from either source
-       switch (currentPhase) {
+        // If we get here, we've been given a new phase, from either source
+        switch (currentPhase) {
            case 0:
                //EnterMapStateZero();
                break;
@@ -232,8 +245,8 @@ public class MapStateManager : MonoBehaviour {
     }
     */
     private void EnterMapStateOne() { // note => ** PURSUE AND EVADE, WITH WALL AVOIDANCE **
+
         narrator.text = "In Phase One, we're going to demonstrate pursue and evade, with wall avoidance.";
-        Debug.Log("we got into state one");
         spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
         spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
         spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
@@ -250,8 +263,7 @@ public class MapStateManager : MonoBehaviour {
     {
         narrator.text = "Entering Phase Two: more intelligent wander";
         spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
-        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
-        spawnedNPCs[1].GetComponent<NPCController>().phase = 4;
+        spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
     }
@@ -260,12 +272,29 @@ public class MapStateManager : MonoBehaviour {
     {
         narrator.text = "Entering Phase Three: Chase the NPC";
         spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
-        spawnedNPCs.Add(PlayerPrefab);
-        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
+        GameObject tempPlayer = PlayerPrefab;
+        spawnedNPCs.Add(tempPlayer);
         spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+        spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
+        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 5;
         //spawnedNPCs[1].GetComponent<SteeringBehavior>().target = PlayerPrefab.GetComponent<NPCController>();
-       
+
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
+    }
+    private void EnterMapStateFour() { // note => ** PURSUE AND EVADE, WITH WALL AVOIDANCE **
+
+        narrator.text = "In Phase Four, we're going to demonstrate arrive and evade, with wall avoidance.";
+        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
+        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
+        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+
+        spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
+
+        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 3;
+        //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
+
     }
 
 
