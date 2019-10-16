@@ -2,13 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// This is the place to put all of the various steering behavior methods we're going
-/// to be using. Probably best to put them all here, not in NPCController.
-/// </summary>
-
-public class SteeringBehavior : MonoBehaviour {
-
+public class oldSteering : MonoBehaviour
+{
     // The agent at hand here, and whatever target it is dealing with
     public NPCController agent;
     public NPCController target;
@@ -40,7 +35,7 @@ public class SteeringBehavior : MonoBehaviour {
 
     LineRenderer line;
 
-   
+
 
     // Holds the path to follow
     public GameObject[] Path;
@@ -49,7 +44,7 @@ public class SteeringBehavior : MonoBehaviour {
     [Header("Our Variables")]
     public float pred;
     public PlayerController playerTarget;
-    private bool avoid = false; 
+    private bool avoid = false;
     [Header("For wander")]
     public Vector3 wanderCircleCenter;
     [Header("Ray 'sensors'")]
@@ -63,7 +58,7 @@ public class SteeringBehavior : MonoBehaviour {
     public Vector3 collisionNormal;
 
     // (jessie) for collision avoidance, need list of potential targets 
-   // public GameObject[] targets;
+    // public GameObject[] targets;
 
     protected void Start() {
 
@@ -74,10 +69,10 @@ public class SteeringBehavior : MonoBehaviour {
         maxPrediction = 1f;
 
         // initialize our "detectors" for collision avoidance
-        if(centerDetector == null) {
+        if (centerDetector == null) {
             centerDetector = agent.transform;
         }
-        if(rightAngleDetector == null) {
+        if (rightAngleDetector == null) {
             rightAngleDetector = agent.transform;
         }
         if (leftAngleDetector == null) {
@@ -91,7 +86,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         float newOrientation;
         // make sure we have a velocity 
-        if(velocity != Vector3.zero) {
+        if (velocity != Vector3.zero) {
             // calculate orientation using arc tangent of the velocity components
             // return 
             newOrientation = Mathf.Atan2(-velocity.x, velocity.z);
@@ -120,20 +115,23 @@ public class SteeringBehavior : MonoBehaviour {
     }
     */
 
-    public float Face()
-    {
+    public float Face() {
         return 0f;
     }
 
 
     // ETC.
 
+    /* todo: "sensors" for raycasts, finish putting the other ones in 
+     and make the agent avoid the obstacles. then, make the chasing agent
+     avoid them too . once u get that to work, see about making algos 
+     "more intelligent* / 
 
-    /*
- * getSteering() calculates a surrogate target
- * and returns the target's position
- * (from assignment 1)
- */
+        /*
+     * getSteering() calculates a surrogate target
+     * and returns the target's position
+     * (from assignment 1)
+     */
     // Jessie 
     public Vector3 getSteering() {
 
@@ -225,11 +223,11 @@ public class SteeringBehavior : MonoBehaviour {
         return steering;
 
     }
- /* 
-  * Arrive() causes the agent to move towards the target, like pursue.
-  *     but unlike pursue, Arrive() causes the agent to slow down as it arrives
- *      exactly at the right location.
- */
+    /* 
+     * Arrive() causes the agent to move towards the target, like pursue.
+     *     but unlike pursue, Arrive() causes the agent to slow down as it arrives
+    *      exactly at the right location.
+    */
     public Vector3 Arrive() {
 
         // Create the structure to hold our output
@@ -364,17 +362,16 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 distance = target.position - agent.position;
         Vector3 veloDiff = target.velocity - agent.velocity;
         float t_closest = -Vector3.Dot(distance, veloDiff) / Mathf.Pow(veloDiff.magnitude, 2f);
-        if(t_closest < 0) {
+        if (t_closest < 0) {
             return Vector3.zero;
         }
         Vector3 agentFuture = agent.position + agent.velocity * t_closest;
         Vector3 targetFuture = target.position + target.velocity * t_closest;
-        if((agentFuture - targetFuture).magnitude < 1f) {
+        if ((agentFuture - targetFuture).magnitude < 1f) {
             Vector3 evasion = -agent.velocity;
             agent.DrawCircle(evasion.normalized * maxAcceleration, 0.4f);
             return evasion.normalized * maxAcceleration;
-        }
-        else {
+        } else {
             return Vector3.zero;
         }
     }
@@ -393,23 +390,21 @@ public class SteeringBehavior : MonoBehaviour {
         // (i.e., the length of the collision ray)
         float raysLength = 2f;
         // Calculate the collision ray vector
-        Vector3 forwardRay = agent.velocity;
-        forwardRay.y = 0f;
-        
-      //  Vector3 leftAngleRay = agent.velocity - 
-       // forwardRay.Normalize();
+        Vector3 agentVelocity = agent.velocity;
+        agentVelocity.y = 0f;
+        agentVelocity.Normalize();
         // shoot the ray from the character's current position
         Vector3 rayStartPos = agent.position;
         // holds the collision position and normal if collision detected
         Vector3 collisionPosition;
         Vector3 collisionNormal;
         // Find the collision
-        if (Physics.SphereCast(rayStartPos, 0.6f, forwardRay, out hit, raysLength)) {
+        if (Physics.SphereCast(rayStartPos, 0.6f, agentVelocity, out hit, raysLength)) {
 
             Debug.DrawRay(rayStartPos, hit.point);
             if (hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
-               // collisionPosition = hit.point;
+                // collisionPosition = hit.point;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;
                 dir.Normalize();
@@ -430,7 +425,7 @@ public class SteeringBehavior : MonoBehaviour {
         }
 
     }
-    
+
 
     public float LookWhereYoureGoing() {
         // Create the structure to hold our output
@@ -438,7 +433,7 @@ public class SteeringBehavior : MonoBehaviour {
         float direction = Mathf.Atan2(agent.velocity.x, agent.velocity.z);
         // Get the naive direction to the target
         float rotation = direction - agent.orientation;
-        
+
         // map the result to the (-pi,pi) interval 
         while (rotation > Mathf.PI) {
             rotation -= 2 * Mathf.PI;
@@ -457,8 +452,7 @@ public class SteeringBehavior : MonoBehaviour {
         float targetRotation;
         if (rotationSize > slowRadiusA) {
             targetRotation = maxRotation;
-        }
-        else {
+        } else {
             targetRotation = (maxRotation * rotationSize) / slowRadiusA;
         }
 
@@ -482,6 +476,4 @@ public class SteeringBehavior : MonoBehaviour {
         // output the steering 
         return steering_angular;
     }
-
-
 }

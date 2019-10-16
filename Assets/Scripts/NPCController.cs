@@ -62,11 +62,7 @@ public class NPCController : MonoBehaviour {
                 }
                 Behavior aiAvoidP = new Behavior(3f, 0f, ai.WallAvoidance());
                 Behavior aiPursue = new Behavior(1f, 0f, ai.Pursue());
-                if(aiAvoidP.behavior != Vector3.zero) {
-                    aiPursue.weight = 0.1f;
-                } else {
-                    aiPursue.weight = 1f;
-                }
+            
                 linear = (aiPursue.weight * aiPursue.behavior) + (aiAvoidP.weight * aiAvoidP.behavior);
 
 
@@ -78,11 +74,7 @@ public class NPCController : MonoBehaviour {
                 }
                 Behavior aiAvoidE = new Behavior(3f, 0f, ai.WallAvoidance());
                 Behavior aiEvade = new Behavior(0.8f, 0f, ai.Evade());
-                if (aiAvoidE.behavior != Vector3.zero) {
-                    aiEvade.weight = 0.1f;
-                } else {
-                    aiEvade.weight = 1f;
-                }
+      
                 linear = (aiEvade.weight * aiEvade.behavior) + (aiAvoidE.weight * aiAvoidE.behavior);
                 Debug.Log(linear);
                // linear = 
