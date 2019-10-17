@@ -38,9 +38,6 @@ public class SteeringBehavior : MonoBehaviour {
     public float wanderRate;
     private float wanderOrientation;
 
-    LineRenderer line;
-
-   
 
     // Holds the path to follow
     public GameObject[] Path;
@@ -69,7 +66,6 @@ public class SteeringBehavior : MonoBehaviour {
 
         agent = GetComponent<NPCController>();
         wanderOrientation = agent.orientation;
-        line = GetComponent<LineRenderer>();
         frontRayPosition = agent.position.z;
         maxPrediction = 1f;
 
@@ -392,42 +388,75 @@ public class SteeringBehavior : MonoBehaviour {
         // Holds the distance to look ahead for a collision
         // (i.e., the length of the collision ray)
         float raysLength = 2f;
+        float whiskerLength = 0.5f;
         // Calculate the collision ray vector
         Vector3 forwardRay = agent.velocity;
         forwardRay.y = 0f;
-        
-      //  Vector3 leftAngleRay = agent.velocity - 
-       // forwardRay.Normalize();
+        float veloDir = Mathf.Atan2(agent.velocity.x, agent.velocity.z);
+        float leftWhiskerDir = veloDir + Mathf.PI / 4;
+        Vector3 leftWhisker = new Vector3(Mathf.Cos(leftWhiskerDir), 0f, Mathf.Sin(leftWhiskerDir));
+        leftWhisker.Normalize();
+        float rightWhiskerDir = veloDir - Mathf.PI / 4;
+        Vector3 rightWhisker = new Vector3(Mathf.Cos(rightWhiskerDir), 0f, Mathf.Sin(rightWhiskerDir));
+        rightWhisker.Normalize();
+
+
         // shoot the ray from the character's current position
         Vector3 rayStartPos = agent.position;
         // holds the collision position and normal if collision detected
         Vector3 collisionPosition;
         Vector3 collisionNormal;
         // Find the collision
-        if (Physics.SphereCast(rayStartPos, 0.6f, forwardRay, out hit, raysLength)) {
+        if (Physics.SphereCast(rayStartPos, 0.4f, forwardRay, out hit, raysLength)) {
 
             Debug.DrawRay(rayStartPos, hit.point);
             if (hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
-               // collisionPosition = hit.point;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;
                 dir.Normalize();
                 dir += hit.normal * avoidDistance;
-                //Vector3 newTargetPos = -collisionPosition + collisionNormal * avoidDistance;
-                //Vector3 direction = newTargetPos - agent.position;
-                //direction.Normalize();
-                // direction *= maxAcceleration;
-                // return direction;
                 dir *= maxAcceleration;
                 return dir;
             } else {
                 return new Vector3(0.0f, 0.0f, 0.0f);
             }
-
-        } else {
-            return new Vector3(0.0f, 0.0f, 0.0f);
         }
+
+        if(Physics.SphereCast(rayStartPos, 0.4f, leftWhisker, out hit, whiskerLength)){
+            Debug.DrawRay(rayStartPos, hit.point);
+            if (hit.transform != target.transform) {
+                collisionPosition = hit.transform.position;
+                collisionNormal = hit.normal;
+                Vector3 dir = collisionPosition - agent.position;
+                dir.Normalize();
+                dir += hit.normal * avoidDistance;
+                dir *= maxAcceleration;
+                return dir;
+            }
+            else {
+                return new Vector3(0.0f, 0.0f, 0.0f);
+            }
+        }
+
+        if (Physics.SphereCast(rayStartPos, 0.4f, rightWhisker, out hit, whiskerLength)){
+            Debug.DrawRay(rayStartPos, hit.point);
+            if (hit.transform != target.transform) {
+                collisionPosition = hit.transform.position;
+                collisionNormal = hit.normal;
+                Vector3 dir = collisionPosition - agent.position;
+                dir.Normalize();
+                dir += hit.normal * avoidDistance;
+                dir *= maxAcceleration;
+                return dir;
+            }
+            else {
+                return new Vector3(0.0f, 0.0f, 0.0f);
+            }
+        }
+        return new Vector3(0.0f, 0.0f, 0.0f);
+        
+
 
     }
     
