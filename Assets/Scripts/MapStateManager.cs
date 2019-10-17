@@ -150,7 +150,10 @@ public class MapStateManager : MonoBehaviour {
 
            case 3:
                 EnterMapStateThree();
-               break;
+                break;
+           case 4:
+                EnterMapStateFour();
+                break;
        }
      
     /*
@@ -282,21 +285,11 @@ public class MapStateManager : MonoBehaviour {
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
     }
-    private void EnterMapStateFour() { // note => ** PURSUE AND EVADE, WITH WALL AVOIDANCE **
 
-        narrator.text = "In Phase Four, we're going to demonstrate arrive and evade, with wall avoidance.";
-        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
-        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
-        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
-
-        spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
-
-        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
-        spawnedNPCs[1].GetComponent<NPCController>().phase = 3;
-        //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
-
+    private void EnterMapStateFour() {
+        narrator.text = "Following the path";
+        spawnedNPCs.Add(SpawnItem(spawner1, RedPrefab, null, SpawnText2, 6));
     }
-
 
     // ... Etc. Etc.
 

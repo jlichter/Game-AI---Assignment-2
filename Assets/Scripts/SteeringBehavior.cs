@@ -410,7 +410,7 @@ public class SteeringBehavior : MonoBehaviour {
         if (Physics.SphereCast(rayStartPos, 0.4f, forwardRay, out hit, raysLength)) {
 
             Debug.DrawRay(rayStartPos, hit.point);
-            if (hit.transform != target.transform) {
+            if (target == null || hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;
@@ -425,7 +425,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         if(Physics.SphereCast(rayStartPos, 0.4f, leftWhisker, out hit, whiskerLength)){
             Debug.DrawRay(rayStartPos, hit.point);
-            if (hit.transform != target.transform) {
+            if (target == null || hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;
@@ -441,7 +441,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         if (Physics.SphereCast(rayStartPos, 0.4f, rightWhisker, out hit, whiskerLength)){
             Debug.DrawRay(rayStartPos, hit.point);
-            if (hit.transform != target.transform) {
+            if (target == null || hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;
@@ -510,6 +510,19 @@ public class SteeringBehavior : MonoBehaviour {
         // 
         // output the steering 
         return steering_angular;
+    }
+
+    public Vector3 followPath() {
+        Vector3 pathTarget = Path[current].transform.position;
+        while(Vector3.Distance(agent.position, pathTarget) < 1f) {
+            current++;
+            if(current > Path.Length) {
+                return Vector3.zero;
+            }
+            pathTarget = Path[current].transform.position;
+        }
+        Vector3 direction = pathTarget - agent.position;
+        return direction.normalized * maxAcceleration;
     }
 
 
