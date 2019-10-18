@@ -61,23 +61,27 @@ public class MapStateManager : MonoBehaviour {
     // spawnedNPCs list. You can always add/remove NPCs later on.
 
     void Start() {
+        /*
         narrator.text = "Welcome to our demo of ai movement and collision avoidance. The following number" +
             "keys exhibit these algorithms: \n" +
             "(1) Pursue and Evade with Wall Avoidance\n" +
             "(2) More intelligent Wander\n"+
             "(3) Chasing player with Collision Prediction\n"+
             "(4) "; //todo edit
+        */
+        narrator.text = "Welcome to the tale of Little Red Riding Hood, \n" +
+            "the Hunter, and the Wolf";
         narrator.resizeTextForBestFit = true;
         narrator.alignment = TextAnchor.UpperLeft;
 
         TreeCount = 100;    // TreeCount isn't showing up in Inspector
-
-        trees = new List<GameObject>();
-        SpawnTrees(TreeCount);
+        StartCoroutine(playStory());
+        //trees = new List<GameObject>();
+        // SpawnTrees(TreeCount);
 
         spawnedNPCs = new List<GameObject>();
-        PlayerPrefab = GameObject.FindGameObjectWithTag("Player");
-        thePlayer = PlayerPrefab.GetComponent<PlayerController>();
+      //  PlayerPrefab = GameObject.FindGameObjectWithTag("Player");
+       // thePlayer = PlayerPrefab.GetComponent<PlayerController>();
         // add to list, with call to SpawnItem (returns game object) --> args ( game object location, the prefab, the target, the text, 
         
 
@@ -92,6 +96,7 @@ public class MapStateManager : MonoBehaviour {
     /// </summary>
     private void Update()
     {
+        /*
         int num;
 
         string inputstring = Input.inputString;
@@ -155,7 +160,7 @@ public class MapStateManager : MonoBehaviour {
                 EnterMapStateFour();
                 break;
        }
-     
+     */
     /*
         switch (currentPhase)
             {
@@ -234,6 +239,16 @@ public class MapStateManager : MonoBehaviour {
             }
     */
     }
+    IEnumerator playStory() {
+        print(Time.time);
+        yield return new WaitForSeconds(5);
+        narrator.text = "The Hunter appears, searching idly for game...";
+        // pat's code 
+        print(Time.time);
+        yield return new WaitForSeconds(7);
+        // no 2, pat's code 
+    }
+        
 
     /*
     private void EnterMapStateZero()
