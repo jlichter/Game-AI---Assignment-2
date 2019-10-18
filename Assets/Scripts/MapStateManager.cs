@@ -265,8 +265,13 @@ public class MapStateManager : MonoBehaviour {
     private void EnterMapStateOne() { // note => ** PURSUE AND EVADE, WITH WALL AVOIDANCE **
 
         narrator.text = "First, the hunter appears, and then begins to wander around";
-        GameObject hunter = SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 4);
+        GameObject hunter = SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0);
         spawnedNPCs.Add(hunter);
+        //WaitForSeconds(2);
+        //spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
+        //yield return new WaitForSeconds(5);
+        //currentPhase = 2;
+        //EnterMapStateTwo();
         Invoke("startHunterWander", 2f);
         Invoke("EnterMapStateTwo", 5f);
     }
@@ -278,14 +283,23 @@ public class MapStateManager : MonoBehaviour {
     private void EnterMapStateTwo()
     {
         narrator.text = "Soon after, the wolf appears, and begins to wander";
-        spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText1, 0));
+        spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 0));
         Invoke("startWolfWander", 2f);
-        while (Vector3.Distance(spawnedNPCs[0].transform.position, spawnedNPCs[1].transform.position) > 15f) { }
-        EnterMapStateThree();
+        StartCoroutine("checkDistance");
     }
 
     private void startWolfWander() {
         spawnedNPCs[1].GetComponent<NPCController>().phase = 4;
+    }
+
+    private IEnumerator checkDistance() {
+        while (true) {
+            if(Vector3.Distance(spawnedNPCs[0].transform.position, spawnedNPCs[1].transform.position) < 15f) {
+                break;
+            }
+            yield return null;
+        }
+        EnterMapStateThree();
     }
 
     private void EnterMapStateThree()
