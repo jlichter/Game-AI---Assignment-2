@@ -307,6 +307,13 @@ public class MapStateManager : MonoBehaviour {
         spawnedNPCs.Add(SpawnItem(spawner1, RedPrefab, null, SpawnText2, 6));
     }
 
+    private void EnterMapStateSix() {
+        narrator.text = "Red continues on her way while the wolf rushes to the house...";
+        spawnedNPCs[2].GetComponent<NPCController>().phase = 6;
+        spawnedNPCs[1].GetComponent<NPCController>().GetComponent<SteeringBehavior>().target = house;
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 3;
+    }
+
     // ... Etc. Etc.
 
     /// <summary>

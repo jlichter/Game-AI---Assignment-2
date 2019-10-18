@@ -84,9 +84,8 @@ public class NPCController : MonoBehaviour {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Arrive algorithm";
                 }
                 Behavior aiAvoidA = new Behavior(3f, 0f, ai.WallAvoidance());
-                Behavior aiArrive = new Behavior(1f, 0f, ai.Pursue());
+                Behavior aiArrive = new Behavior(1f, 0f, ai.Arrive());
                 linear = (aiArrive.weight * aiArrive.behavior) + (aiAvoidA.weight * aiAvoidA.behavior);
-                linear = ai.Arrive();
 
                 break;
             case 4: /* note => WANDER */
