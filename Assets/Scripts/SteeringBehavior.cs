@@ -527,5 +527,9 @@ public class SteeringBehavior : MonoBehaviour {
         return direction.normalized * maxAcceleration;
     }
 
+    public Vector3 stop() {
+        Vector3 direction = -agent.velocity;
+        return direction.normalized * maxAcceleration;
+    }
 
 }

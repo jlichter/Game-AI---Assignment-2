@@ -115,6 +115,12 @@ public class NPCController : MonoBehaviour {
                 linear = ai.followPath() + 3 * ai.WallAvoidance();
                 //angular = ai.LookWhereYoureGoing();
                 break;
+            case 7:
+                if (label) {
+                    label.text = name.Replace("(Clone)", "") + "Stopped";
+                }
+                linear = ai.stop();
+                break;
         }
         if (isPlayer) {
             linear = player.GetComponent<PlayerController>().velocity;

@@ -75,11 +75,12 @@ public class MapStateManager : MonoBehaviour {
         narrator.alignment = TextAnchor.UpperLeft;
 
         TreeCount = 100;    // TreeCount isn't showing up in Inspector
-        StartCoroutine(playStory());
+        //StartCoroutine(playStory());
         //trees = new List<GameObject>();
         // SpawnTrees(TreeCount);
 
         spawnedNPCs = new List<GameObject>();
+        EnterMapStateOne();
       //  PlayerPrefab = GameObject.FindGameObjectWithTag("Player");
        // thePlayer = PlayerPrefab.GetComponent<PlayerController>();
         // add to list, with call to SpawnItem (returns game object) --> args ( game object location, the prefab, the target, the text, 
@@ -98,6 +99,7 @@ public class MapStateManager : MonoBehaviour {
     {
 
     }
+
     IEnumerator playStory() {
         print(Time.time);
         yield return new WaitForSeconds(5);
@@ -110,44 +112,27 @@ public class MapStateManager : MonoBehaviour {
     }
         
 
-    /*
-    private void EnterMapStateZero()
-    {
-        narrator.text = "Please enter a number key 1 -  ...";
-        //narrator.text = "The Hunter spots the wolf and believes it is his target. The Wolf runs.";
-        
-
-        //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
-
-        //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
-    }
-    */
     private void EnterMapStateOne() { // note => ** PURSUE AND EVADE, WITH WALL AVOIDANCE **
 
         narrator.text = "First, the hunter appears, and then begins to wander around";
         GameObject hunter = SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0);
         spawnedNPCs.Add(hunter);
-        //WaitForSeconds(2);
-        //spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
-        //yield return new WaitForSeconds(5);
-        //currentPhase = 2;
-        //EnterMapStateTwo();
         Invoke("startHunterWander", 2f);
         Invoke("EnterMapStateTwo", 5f);
     }
 
     private void startHunterWander() {
         spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
-        // no 2, pat's code
-        narrator.text = "Ah! A wolf, seemingly docile...";
-        // spawn wolf wandering
-        spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText1, 4));
-        yield return new WaitForSeconds(4);
-        narrator.text = "The hunter hears the wolf, and begins his pursuit...";
-        // make the wolf the hunter's target and change hunter's phase to pursue state
-        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
-        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
-        yield return new WaitForSeconds(5);
+        //no 2, pat's code
+        //narrator.text = "Ah! A wolf, seemingly docile...";
+        //// spawn wolf wandering
+        //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText1, 4));
+        //yield return new WaitForSeconds(4);
+        //narrator.text = "The hunter hears the wolf, and begins his pursuit...";
+        //// make the wolf the hunter's target and change hunter's phase to pursue state
+        //spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+        //spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
+        //yield return new WaitForSeconds(5);
     }
 
     private void EnterMapStateTwo()
@@ -174,22 +159,49 @@ public class MapStateManager : MonoBehaviour {
 
     private void EnterMapStateThree()
     {
-        narrator.text = "Entering Phase Three: Chase the NPC";
-        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
-        GameObject tempPlayer = PlayerPrefab;
-        spawnedNPCs.Add(tempPlayer);
-        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+        narrator.text = "The hunter spots the wolf! He begins to chase the fleeing wolf!";
+        
         spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 2;
+        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
         spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
-        spawnedNPCs[1].GetComponent<NPCController>().phase = 5;
-        //spawnedNPCs[1].GetComponent<SteeringBehavior>().target = PlayerPrefab.GetComponent<NPCController>();
 
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
     }
 
+    private IEnumerator checkCollision() {
+        while (true) {
+            if (Vector3.Distance(spawnedNPCs[0].transform.position, spawnedNPCs[1].transform.position) < 1f) {
+                break;
+            }
+            yield return null;
+        }
+        Destroy(spawnedNPCs[0]);
+        Destroy(spawnedNPCs[1]);
+        EnterMapStateFour();
+    }
+
     private void EnterMapStateFour() {
-        narrator.text = "Following the path";
-        spawnedNPCs.Add(SpawnItem(spawner1, RedPrefab, null, SpawnText2, 6));
+        narrator.text = "The hunter catches the wolf! Meanwhile, Little Red appears, heading to grandma's house";
+        spawnedNPCs.Add(SpawnItem(spawner1, RedPrefab, null, SpawnText3, 6));
+        Invoke("EnterMapStateFive", 5f);
+    }
+
+    private void EnterMapStateFive() {
+        narrator.text = "But wait! The wolf shows up again, and makes his way to Red";
+        spawnedNPCs[1] = SpawnItem(spawner3, WolfPrefab, spawnedNPCs[2].GetComponent<NPCController>(), SpawnText2, 1);
+    }
+
+    private IEnumerator redWolfMeeting() {
+        while (true) {
+            if (Vector3.Distance(spawnedNPCs[1].transform.position, spawnedNPCs[2].transform.position) < 3f) {
+                break;
+            }
+            yield return null;
+        }
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 7;
+        spawnedNPCs[2].GetComponent<NPCController>().phase = 7;
+        Invoke("EnterMapStateSix", 4);
     }
 
     private void EnterMapStateSix() {
@@ -197,6 +209,12 @@ public class MapStateManager : MonoBehaviour {
         spawnedNPCs[2].GetComponent<NPCController>().phase = 6;
         spawnedNPCs[1].GetComponent<NPCController>().GetComponent<SteeringBehavior>().target = house;
         spawnedNPCs[1].GetComponent<NPCController>().phase = 3;
+        Invoke("EnterMapStateSeven", 2);
+    }
+
+    private void EnterMapStateSeven() {
+        narrator.text = "But the hunter shows up again, and sees the wolf rushing to the home, he must stop it!";
+        spawnedNPCs[0] = SpawnItem(spawner3, HunterPrefab, house, SpawnText1, 3);
     }
 
     // ... Etc. Etc.
