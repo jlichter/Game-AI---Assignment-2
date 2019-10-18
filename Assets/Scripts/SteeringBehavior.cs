@@ -411,7 +411,8 @@ public class SteeringBehavior : MonoBehaviour {
         if (Physics.SphereCast(rayStartPos, 0.4f, forwardRay, out hit, raysLength)) {
 
             Debug.DrawRay(rayStartPos, hit.point);
-            if (hit.transform != target.transform) {
+          //  if(target)
+            if (target == null || hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;
@@ -426,7 +427,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         if(Physics.SphereCast(rayStartPos, 0.4f, leftWhisker, out hit, whiskerLength)){
             Debug.DrawRay(rayStartPos, hit.point);
-            if (hit.transform != target.transform) {
+            if (target == null || hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;
@@ -442,7 +443,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         if (Physics.SphereCast(rayStartPos, 0.4f, rightWhisker, out hit, whiskerLength)){
             Debug.DrawRay(rayStartPos, hit.point);
-            if (hit.transform != target.transform) {
+            if (target == null || hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
                 Vector3 dir = collisionPosition - agent.position;

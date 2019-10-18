@@ -95,10 +95,11 @@ public class NPCController : MonoBehaviour {
                 }
                 Vector3 wallAvoid = ai.WallAvoidance();
                 
-                linear = ai.Wander() + 4 * wallAvoid;
+                linear = (0.9f * ai.Wander()) + (5f * wallAvoid);
                 angular = 2*ai.LookWhereYoureGoing();
                 
                 DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
+                Debug.Log("still here!");
                 break;
             case 5: // note ==> PURSUING PLAYER WITH COLLISION PREDICTION
                  if (label) {
