@@ -106,7 +106,18 @@ public class MapStateManager : MonoBehaviour {
         spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 4));
         print(Time.time);
         yield return new WaitForSeconds(7);
-        // no 2, pat's code 
+        spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
+        // no 2, pat's code
+        narrator.text = "Ah! A wolf, seemingly docile...";
+        // spawn wolf wandering
+        spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText1, 4));
+        yield return new WaitForSeconds(4);
+        narrator.text = "The hunter hears the wolf, and begins his pursuit...";
+        // make the wolf the hunter's target and change hunter's phase to pursue state
+        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
+        yield return new WaitForSeconds(5);
+     
     }
         
 
@@ -137,17 +148,7 @@ public class MapStateManager : MonoBehaviour {
     }
 
     private void startHunterWander() {
-        spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
-        // no 2, pat's code
-        narrator.text = "Ah! A wolf, seemingly docile...";
-        // spawn wolf wandering
-        spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText1, 4));
-        yield return new WaitForSeconds(4);
-        narrator.text = "The hunter hears the wolf, and begins his pursuit...";
-        // make the wolf the hunter's target and change hunter's phase to pursue state
-        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
-        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
-        yield return new WaitForSeconds(5);
+
     }
 
     private void EnterMapStateTwo()
