@@ -76,7 +76,7 @@ public class NPCController : MonoBehaviour {
                 Behavior aiEvade = new Behavior(0.8f, 0f, ai.Evade());
       
                 linear = (aiEvade.weight * aiEvade.behavior) + (aiAvoidE.weight * aiAvoidE.behavior);
-                Debug.Log(linear);
+                
                // linear = 
                 break;
             case 3: /* note => ARRIVE */

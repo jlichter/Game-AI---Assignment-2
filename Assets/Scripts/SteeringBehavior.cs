@@ -387,7 +387,7 @@ public class SteeringBehavior : MonoBehaviour {
         float avoidDistance = 3f;
         // Holds the distance to look ahead for a collision
         // (i.e., the length of the collision ray)
-        float raysLength = 2f;
+        float raysLength = 3f;
         float whiskerLength = 0.5f;
         // Calculate the collision ray vector
         Vector3 forwardRay = agent.velocity;
@@ -407,6 +407,7 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 collisionPosition;
         Vector3 collisionNormal;
         // Find the collision
+        
         if (Physics.SphereCast(rayStartPos, 0.4f, forwardRay, out hit, raysLength)) {
 
             Debug.DrawRay(rayStartPos, hit.point);
