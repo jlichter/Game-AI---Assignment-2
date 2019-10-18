@@ -249,26 +249,28 @@ public class MapStateManager : MonoBehaviour {
     */
     private void EnterMapStateOne() { // note => ** PURSUE AND EVADE, WITH WALL AVOIDANCE **
 
-        narrator.text = "In Phase One, we're going to demonstrate pursue and evade, with wall avoidance.";
-        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
-        spawnedNPCs.Add(SpawnItem(spawner1, WolfPrefab, null, SpawnText1, 0));
-        spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
+        narrator.text = "First, the hunter appears, and then begins to wander around";
+        GameObject hunter = SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 4);
+        spawnedNPCs.Add(hunter);
+        Invoke("startHunterWander", 2f);
+        Invoke("EnterMapStateTwo", 5f);
+    }
 
-        spawnedNPCs[1].GetComponent<SteeringBehavior>().target = spawnedNPCs[0].GetComponent<NPCController>();
-
-        spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
-        spawnedNPCs[1].GetComponent<NPCController>().phase = 2;
-        //currentPhase = 2; // or whatever. Won't necessarily advance the phase every time
-
+    private void startHunterWander() {
+        spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
     }
 
     private void EnterMapStateTwo()
     {
-        narrator.text = "Entering Phase Two: more intelligent wander";
-        spawnedNPCs.Add(SpawnItem(spawner1, HunterPrefab, null, SpawnText1, 0));
-        spawnedNPCs[0].GetComponent<NPCController>().phase = 4;
+        narrator.text = "Soon after, the wolf appears, and begins to wander";
+        spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText1, 0));
+        Invoke("startWolfWander", 2f);
+        while (Vector3.Distance(spawnedNPCs[0].transform.position, spawnedNPCs[1].transform.position) > 15f) { }
+        EnterMapStateThree();
+    }
 
-        //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
+    private void startWolfWander() {
+        spawnedNPCs[1].GetComponent<NPCController>().phase = 4;
     }
 
     private void EnterMapStateThree()
