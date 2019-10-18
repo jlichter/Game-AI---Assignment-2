@@ -116,9 +116,59 @@ public class SteeringBehavior : MonoBehaviour {
     }
     */
 
-    public float Face()
-    {
-        return 0f;
+    public float Face() {
+
+        // Create the structure to hold our output
+        float steering_angular;
+
+        // Get the naive direction to the target
+        Vector3 direction = target.position - agent.position;
+
+        float rotation = Mathf.Atan2(direction.x, direction.z) - agent.orientation;
+
+        // map the result to the (-pi,pi) interval 
+        while (rotation > Mathf.PI) {
+            rotation -= 2 * Mathf.PI;
+        }
+        while (rotation < -Mathf.PI) {
+            rotation += 2 * Mathf.PI;
+        }
+        float rotationSize = Mathf.Abs(rotation);
+
+        // Check if we are there, return no steering
+        if (rotationSize < targetRadiusA) {
+            agent.rotation = 0;
+        }
+
+        // Otherwise calculate a scaled rotation 
+        float targetRotation;
+        if (rotationSize > slowRadiusA) {
+            targetRotation = maxRotation;
+        }
+        else {
+            targetRotation = (maxRotation * rotationSize) / slowRadiusA;
+        }
+
+        // The final target rotation combines
+        // speed (already in the variable) and direction
+        targetRotation *= (rotation / rotationSize);
+
+        // Acceleration tries to get to the target rotation
+        steering_angular = targetRotation - agent.rotation;
+        steering_angular = steering_angular / timeToTarget;
+
+        // Check if the acceleration is too great
+        float angularAcceleration;
+        angularAcceleration = Mathf.Abs(steering_angular);
+        if (angularAcceleration > maxAngularAcceleration) {
+            steering_angular = steering_angular / angularAcceleration;
+            steering_angular = steering_angular / angularAcceleration;
+            steering_angular *= maxAngularAcceleration;
+        }
+        // 
+        // output the steering 
+        return steering_angular;
+
     }
 
 

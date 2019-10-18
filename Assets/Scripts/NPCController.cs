@@ -64,6 +64,7 @@ public class NPCController : MonoBehaviour {
                 Behavior aiPursue = new Behavior(1f, 0f, ai.Pursue());
             
                 linear = (aiPursue.weight * aiPursue.behavior) + (aiAvoidP.weight * aiAvoidP.behavior);
+                angular = ai.Face();
 
 
                 break;
@@ -76,7 +77,7 @@ public class NPCController : MonoBehaviour {
                 Behavior aiEvade = new Behavior(0.8f, 0f, ai.Evade());
       
                 linear = (aiEvade.weight * aiEvade.behavior) + (aiAvoidE.weight * aiAvoidE.behavior);
-                
+                angular = ai.LookWhereYoureGoing();
                // linear = 
                 break;
             case 3: /* note => ARRIVE */

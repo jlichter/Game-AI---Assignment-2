@@ -167,13 +167,13 @@ public class MapStateManager : MonoBehaviour {
         spawnedNPCs[1].GetComponent<NPCController>().phase = 2;
         spawnedNPCs[0].GetComponent<SteeringBehavior>().target = spawnedNPCs[1].GetComponent<NPCController>();
         spawnedNPCs[0].GetComponent<NPCController>().phase = 1;
-
+        StartCoroutine("checkCollision");
         //spawnedNPCs.Add(SpawnItem(spawner2, WolfPrefab, null, SpawnText2, 4));
     }
 
     private IEnumerator checkCollision() {
         while (true) {
-            if (Vector3.Distance(spawnedNPCs[0].transform.position, spawnedNPCs[1].transform.position) < 1f) {
+            if (Vector3.Distance(spawnedNPCs[0].transform.position, spawnedNPCs[1].transform.position) < 3f) {
                 break;
             }
             yield return null;
@@ -192,6 +192,7 @@ public class MapStateManager : MonoBehaviour {
     private void EnterMapStateFive() {
         narrator.text = "But wait! The wolf shows up again, and makes his way to Red";
         spawnedNPCs[1] = SpawnItem(spawner3, WolfPrefab, spawnedNPCs[2].GetComponent<NPCController>(), SpawnText2, 1);
+        StartCoroutine("redWolfMeeting");
     }
 
     private IEnumerator redWolfMeeting() {

@@ -129,9 +129,11 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   orientation: 0
   rotation: 0
-  maxSpeed: 4
+  maxSpeed: 5
   phase: 0
   label: {fileID: 0}
+  isPlayer: 0
+  player: {fileID: 0}
 --- !u!114 &114839489207466526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,6 +163,15 @@ MonoBehaviour:
   wanderRate: 1
   Path: []
   current: 0
+  pred: 0
+  playerTarget: {fileID: 0}
+  wanderCircleCenter: {x: 0, y: 0, z: 0}
+  frontRayPosition: 0
+  centerDetector: {fileID: 0}
+  rightAngleDetector: {fileID: 0}
+  leftAngleDetector: {fileID: 0}
+  collisionPosition: {x: 0, y: 0, z: 0}
+  collisionNormal: {x: 0, y: 0, z: 0}
 --- !u!120 &120817520483779392
 LineRenderer:
   m_ObjectHideFlags: 0
