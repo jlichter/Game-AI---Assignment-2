@@ -411,6 +411,7 @@ public class SteeringBehavior : MonoBehaviour {
         if (Physics.SphereCast(rayStartPos, 0.4f, forwardRay, out hit, raysLength)) {
 
             Debug.DrawRay(rayStartPos, hit.point);
+          //  if(target)
             if (target == null || hit.transform != target.transform) {
                 collisionPosition = hit.transform.position;
                 collisionNormal = hit.normal;
