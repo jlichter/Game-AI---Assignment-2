@@ -29,8 +29,8 @@ public class NPCController : MonoBehaviour {
     [Header("Our variables")]
     public bool isPlayer;
     public PlayerController player;
-
-
+    public bool isHouse;
+    public bool isHunter;
     private void Start() {
         ai = GetComponent<SteeringBehavior>();
         rb = GetComponent<Rigidbody>();
@@ -49,7 +49,7 @@ public class NPCController : MonoBehaviour {
         switch (phase) {
             case 0: /* note = > NOT MAPPED : DEFAULT WHILE WAITING FOR INPUT */
                 if(label) {
-                    label.text = name.Replace("(Clone)", "") + "\nWaiting for input";
+                    label.text = name.Replace("(Clone)", "");
                 }
           
                 break;
@@ -61,11 +61,11 @@ public class NPCController : MonoBehaviour {
                     label.text = name.Replace("(Clone)","") + "\nAlgorithm: Pursue algorithm(s)"; 
                 }
                 Behavior aiAvoidP = new Behavior(3f, 0f, ai.WallAvoidance());
-                Behavior aiPursue = new Behavior(1f, 0f, ai.Pursue());
+                Behavior aiPursue = new Behavior(0.9f, 0f, ai.Pursue());
             
                 linear = (aiPursue.weight * aiPursue.behavior) + (aiAvoidP.weight * aiAvoidP.behavior);
                 angular = ai.Face();
-
+                //angular = 0f;
 
                 break;
 
@@ -84,22 +84,63 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Arrive algorithm";
                 }
-                Behavior aiAvoidA = new Behavior(3f, 0f, ai.WallAvoidance());
-                Behavior aiArrive = new Behavior(1f, 0f, ai.Arrive());
-                linear = (aiArrive.weight * aiArrive.behavior) + (aiAvoidA.weight * aiAvoidA.behavior);
+                Behavior aiAvoidA = new Behavior(4f, 0f, ai.WallAvoidance());
+                Behavior aiArrive = new Behavior(0.9f, 0f, ai.Arrive());
+                /*
+                if (ai.WallAvoidance() != Vector3.zero) {
+                    linear = aiAvoidA.weight * aiAvoidA.behavior;
+                } else {
+                    linear = aiArrive.weight * aiArrive.behavior;
+                }
+                */
+                if (isHunter) {
+                    linear = 2 * ai.Arrive();
+                    angular = 3 * ai.LookWhereYoureGoing();
+                } else {
+                    linear = ai.Arrive();
+                    //   linear = (aiArrive.weight * aiArrive.behavior) + (aiAvoidA.weight * aiAvoidA.behavior);
+                    angular = 3 * ai.LookWhereYoureGoing();
+                }
 
                 break;
             case 4: /* note => WANDER */
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Wander algorithm";
                 }
+                //  Vector3 newLinear;
+                Vector3 Wandering;
+                //angular = ai.Wander(out Wandering);
+                //   linear = newLinear;
+               // if(phase == 2) {
+                 //   Debug.Log("whats up?");
+                //}
+                //Vector3 wallAvoid = ai.WallAvoidance();
+                /*
+                if (wallAvoid != Vector3.zero) {
+                    linear = wallAvoid;
+                } else {
+                    linear = Wandering;
+                }
+                */
+             //   linear = Wandering;
                 Vector3 wallAvoid = ai.WallAvoidance();
-                
-                linear = (0.9f * ai.Wander()) + (5f * wallAvoid);
+
+                //linear = (0.9f * ai.Wander()) + (5f * wallAvoid);
+                linear = ai.Wander();
+                angular = 3 * ai.LookWhereYoureGoing();
+
+                DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
+                // linear = (0.9f * Wandering) + (5f * wallAvoid);
+                //   Debug.Log("here is lookWhereYoureGoing" + ai.LookWhereYoureGoing());
+                /*
+                if (!float.IsNaN(angular)) {
+                    angular = 2 * ai.LookWhereYoureGoing();
+                }
+                */
                 angular = 2*ai.LookWhereYoureGoing();
                 
-                DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
-                Debug.Log("still here!");
+              //  DrawCircle(ai.wanderCircleCenter, ai.wanderRadius);
+               // Debug.Log("still here!");
                 break;
             case 5: // note ==> PURSUING PLAYER WITH COLLISION PREDICTION
                  if (label) {
@@ -113,8 +154,8 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "Following the path";
                 }
-                linear = ai.followPath() + 3 * ai.WallAvoidance();
-                //angular = ai.LookWhereYoureGoing();
+                linear = ai.followPath(); // + 3 * ai.WallAvoidance();
+                angular = ai.LookWhereYoureGoing();
                 break;
             case 7:
                 if (label) {
@@ -122,13 +163,18 @@ public class NPCController : MonoBehaviour {
                 }
                 linear = ai.stop();
                 break;
+            case 8: // is house 
+                isHouse = true;
+                break;
         }
         if (isPlayer) {
             linear = player.GetComponent<PlayerController>().velocity;
 
         }
-
-        update(linear, angular, Time.deltaTime);
+        if (!isHouse) {
+            update(linear, angular, Time.deltaTime);
+        }
+        
         if (label) {
             label.transform.position = Camera.main.WorldToScreenPoint(this.transform.position);
         }
@@ -138,22 +184,25 @@ public class NPCController : MonoBehaviour {
 
         if (!isPlayer) {
             // Update the orientation, velocity and rotation
-            orientation += rotation * time;
-            velocity += steeringlin * time;
-            rotation += steeringang * time;
+            if (!isHouse) {
+                orientation += rotation * time;
+                velocity += steeringlin * time;
+                rotation += steeringang * time;
 
-            if (velocity.magnitude > maxSpeed) {
-                velocity.Normalize();
-                velocity *= maxSpeed;
-            }
+                if (velocity.magnitude > maxSpeed) {
+                    velocity.Normalize();
+                    velocity *= maxSpeed;
+                }
 
-            rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
-            position = rb.position;
-            rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
+                rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
+                position = rb.position;
+                rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
+            } 
         } else {
             position = player.GetComponent<PlayerController>().position;
             velocity = player.GetComponent<PlayerController>().velocity;
         }
+
 
     }
 
